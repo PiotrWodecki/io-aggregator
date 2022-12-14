@@ -110,7 +110,8 @@ def get_offers(website_link):
         try:
             shop_url = offer.div.div["data-shopurl"]
             delivery_data_link = (
-                "https://www.ceneo.pl/Product/GetOfferDetails?data=" + product_link[32:]
+                "https://www.ceneo.pl/Product/GetOfferDetails?data="
+                + product_link.split("?e=", 1)[1]
             )
         except KeyError:
             shop_name_section = offer.find(
