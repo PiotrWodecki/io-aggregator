@@ -1,13 +1,12 @@
-<!DOCTYPE html>
 {% extends 'base.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div style="margin:80px">
-        <form method="post">
+    <div style="margin:80px; width: 20%">
+        <form method="post" class="my-class">
             {% csrf_token %}
-            {{form|crispy}}
+            {% crispy form %}
         </form>
     </div>
 {% endblock %}
