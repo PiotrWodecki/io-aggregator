@@ -11,36 +11,12 @@ def prepare_link(name, category):
     Enter the product name and its category.
     The function returns a link to the search query as a string.
     """
-
+    # fmt: off
     special_characters = [
-        "`",
-        "~",
-        "!",
-        "@",
-        "#",
-        "$",
-        "%",
-        "^",
-        "&",
-        "*",
-        "-",
-        "+",
-        "=",
-        "{",
-        "}",
-        ":",
-        ";",
-        "|",
-        "\\",
-        '"',
-        "'",
-        ",",
-        "<",
-        ".",
-        ">",
-        "/",
-        "?",
+        "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "-", "+", "=",
+        "{", "}", ":", ";", "|", "\\", '"', "'", ",", "<", ".", ">", "/", "?"
     ]
+    # fmt: on
     for char in special_characters:
         name = name.replace(char, "")
 
@@ -52,9 +28,9 @@ def prepare_link(name, category):
 
 def get_products(link_to_main_page):
     """
-    Enter the link to the search query.
-    The function returns a list of dictionaries.
-    The dictionary consists of the id, name and link of one product that the user may be interested in.
+    Enter the link to the search query. The function returns a list of
+    dictionaries. The dictionary consists of the id, name and link of one
+    product that the user may be interested in.
     """
 
     content = requests.get(link_to_main_page).text
@@ -81,11 +57,12 @@ def get_products(link_to_main_page):
 
 def get_offers(website_link):
     """
-    Enter the link to specific product on Ceneo.
-    The function returns a list of dictionaries.
-    The dictionary consists of the id, price, shop URL / shop name, description, link and list of dictionaries
-    containing delivery possibilities of one offer where you can buy the product.
-    List of dictionaries containing delivery possibilities consists of delivery name, cost and payment method.
+    Enter the link to specific product on Ceneo. The function returns a list
+    of dictionaries. The dictionary consists of the id, price, shop URL /
+    shop name, description, link and list of dictionaries containing
+    delivery possibilities of one offer where you can buy the product. List
+    of dictionaries containing delivery possibilities consists of delivery
+    name, cost and payment method.
     """
 
     content = requests.get(website_link).text
