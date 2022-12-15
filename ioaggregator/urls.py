@@ -21,5 +21,5 @@ import core.views
 urlpatterns = [
     path("", core.views.home),
     path("admin/", admin.site.urls),
-    path("search/", core.views.search, name='search'),
+    path("search/", core.views.search, name="search"),
 ]
