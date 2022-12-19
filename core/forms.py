@@ -9,8 +9,8 @@ class SearchForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_action = reverse("search")
-        self.helper.form_method = "GET"
-        self.helper.add_input(Submit("submit", "Submit"))
+        self.helper.form_method = "POST"
+        self.helper.add_input(Submit("submit", "Szukaj"))
 
     SHOP_CHOICE = (
         (1, "Tylko Allegro"),
