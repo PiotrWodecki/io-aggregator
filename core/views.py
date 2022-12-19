@@ -14,8 +14,9 @@ def search(request):
         allegro_option = request.POST.get("options")
         context = {"name": item_to_search, "option": allegro_option}
         ready_link = scraper.prepare_link(context.get("name"), "")
-        proposals = scraper.get_products(ready_link)
-        return render(request, "base.html", {"proposals": proposals})
+        products = scraper.get_products(ready_link)
+        # here we need next step of search
+        return redirect("/")
     else:
         form = SearchForm()
         context = {"form": form}
