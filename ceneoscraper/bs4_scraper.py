@@ -184,7 +184,7 @@ def get_offers(website_link):
 if __name__ == "__main__":
     start_time = time.time()
     categories = ["", "Zdrowie", "Uroda"]
-    entered_string = "dupa"
+    entered_string = "lalka"
     ready_link = prepare_link(entered_string, categories[0])
     print(ready_link)
     propos = get_products(ready_link)
