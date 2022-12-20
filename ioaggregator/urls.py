@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+import core.views
+
 urlpatterns = [
+    path("", core.views.home),
     path("admin/", admin.site.urls),
+    path("search/", core.views.search, name="search"),
 ]
