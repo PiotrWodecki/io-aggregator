@@ -5,9 +5,7 @@
 
 {% block content %}
     <div style="margin:80px; width: 20%">
-        <form method="post" class="my-class">
-            {% csrf_token %}
-            {% crispy form %}
-        </form>
+        {% csrf_token %}
+        {% crispy form %}
     </div>
 {% endblock %}
