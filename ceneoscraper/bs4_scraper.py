@@ -33,7 +33,19 @@ def get_products(link_to_main_page):
     product that the user may be interested in.
     """
 
-    content = requests.get(link_to_main_page).text
+    # Disallow redirects which can occur in two cases:
+    # 1. when only a single product is found
+    # 2. when the search result is empty the category is removed
+    request = requests.get(link_to_main_page, allow_redirects=False)
+
+    # category is present between the "/" and ";" characters
+    # if they are present together, it means that the category
+    # has been removed from the url via a redirect
+    if request.status_code == 302 and "/;" in request.headers["Location"]:
+        return None
+
+    content = request.text
+
     soup = BeautifulSoup(content, "lxml")
     products_part = soup.find_all(
         "div",
