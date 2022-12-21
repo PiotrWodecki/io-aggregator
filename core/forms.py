@@ -13,6 +13,9 @@ class SearchForm(forms.Form):
         self.helper.layout = Div(
             Field("q", placeholder="Wpisz nazwę produktu"),
             Field("shop"),
+            Field("category"),
+            # using Submit tag causes its value be sent as a URL query string,
+            # this hack solves this problem
             HTML("<button class=\"btn btn-primary\" type='submit'>Szukaj</button>"),
         )
 
@@ -21,6 +24,10 @@ class SearchForm(forms.Form):
         (2, "Tylko Allegro"),
         (3, "Bez Allegro"),
     )
+    CATEGORY_CHOICE = (
+        ("Zdrowie", "Zdrowie"),
+        ("Uroda", "Uroda"),
+    )
     # product query
     q = forms.CharField(max_length=32, label="Szukaj")
     shop = forms.ChoiceField(
@@ -28,4 +35,10 @@ class SearchForm(forms.Form):
         widget=forms.RadioSelect(),
         initial=1,
         label="Wybierz zakres wyszukiwania:",
+    )
+    category = forms.ChoiceField(
+        choices=CATEGORY_CHOICE,
+        widget=forms.RadioSelect(),
+        initial="Zdrowie",
+        label="Wybierz kategorię:",
     )
