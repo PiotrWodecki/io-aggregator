@@ -56,9 +56,9 @@ def get_products(link_to_main_page):
         price_tuple = (str(value), str(penny)[1:])
         product_price = float(".".join(price_tuple))
         try:
-            product_image = "https:" + products_images[counter].a.img['data-original']
+            product_image = "https:" + products_images[counter].a.img["data-original"]
         except KeyError:
-            product_image = "https:" + products_images[counter].a.img['src']
+            product_image = "https:" + products_images[counter].a.img["src"]
 
         products_list.append(
             {
@@ -66,7 +66,7 @@ def get_products(link_to_main_page):
                 "name": product_name,
                 "link": product_link,
                 "image": product_image,
-                "price": product_price
+                "price": product_price,
             }
         )
 
@@ -91,7 +91,9 @@ def get_offers(website_link):
     if hidden_offers_script:
         matching_text = pattern.search(html.unescape(hidden_offers_script[0].text))
         if matching_text:
-            hidden_offers_link += str(json.loads('{"s":"' + matching_text.group(1) + '"}'))[7:-2]
+            hidden_offers_link += str(
+                json.loads('{"s":"' + matching_text.group(1) + '"}')
+            )[7:-2]
             content = requests.get(hidden_offers_link).text
 
     soup = BeautifulSoup(content, "lxml")
@@ -113,9 +115,9 @@ def get_offers(website_link):
         price_tuple = (str(value), str(penny)[1:])
         shop_image = offer.find("div", class_="product-offer__store__logo")
         try:
-            shop_image = "https:" + shop_image.a.img['data-original']
+            shop_image = "https:" + shop_image.a.img["data-original"]
         except KeyError:
-            shop_image = "https:" + shop_image.a.img['src']
+            shop_image = "https:" + shop_image.a.img["src"]
 
         product_price = float(".".join(price_tuple))
         try:
@@ -185,7 +187,7 @@ def get_offers(website_link):
                 "shop_image": shop_image,
                 "description": product_description,
                 "link": product_link,
-                "delivery": delivery_list
+                "delivery": delivery_list,
             }
         )
         counter += 1
