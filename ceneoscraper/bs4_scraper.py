@@ -22,7 +22,7 @@ def prepare_link(name, category):
         name = name.replace(char, "")
 
     name = " ".join(name.split())  # remove multiple whitespace characters
-    link = "https://www.ceneo.pl/" + category + ";szukaj-" + quote_plus(name)
+    link = "https://www.ceneo.pl/" + category + ";szukaj-" + quote_plus(name.lower())
 
     return link
 

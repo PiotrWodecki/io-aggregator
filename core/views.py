@@ -24,6 +24,7 @@ def select_product(request):
                 "product_query": product_query,
                 "shop_selection": shop_selection,
                 "products": products,
+                "form": form,
             },
         )
     return render(request, "shopping/search.html", {"form": form})
