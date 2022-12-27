@@ -55,6 +55,10 @@ def get_products(link_to_main_page):
         penny = products_price[counter].find("span", class_="penny").text
         price_tuple = (str(value), str(penny)[1:])
         product_price = float(".".join(price_tuple))
+
+        # each element has the "src", but only the first few img tags contain link to the image,
+        # the rest of the images are generated using javascript and "data-original" fields
+        # (not every element has them)
         try:
             product_image = "https:" + products_images[counter].a.img["data-original"]
         except KeyError:
@@ -87,13 +91,13 @@ def get_offers(website_link):
     soup = BeautifulSoup(content, "lxml")
     pattern = re.compile(r"\.remainingInit\('(.*)',")
     hidden_offers_script = soup.find_all("script", text=pattern)
-    hidden_offers_link = "https://www.ceneo.pl/"
     if hidden_offers_script:
         matching_text = pattern.search(html.unescape(hidden_offers_script[0].text))
         if matching_text:
+            hidden_offers_link = "https://www.ceneo.pl/"
             hidden_offers_link += str(
-                json.loads('{"s":"' + matching_text.group(1) + '"}')
-            )[7:-2]
+                json.loads('{"s":"' + matching_text.group(1) + '"}')["s"]
+            )
             content = requests.get(hidden_offers_link).text
 
     soup = BeautifulSoup(content, "lxml")
@@ -114,6 +118,10 @@ def get_offers(website_link):
         penny = details.find("span", class_="penny").text
         price_tuple = (str(value), str(penny)[1:])
         shop_image = offer.find("div", class_="product-offer__store__logo")
+
+        # each element has the "src", but only the first few img tags contain link to the image,
+        # the rest of the images are generated using javascript and "data-original" fields
+        # (not every element has them)
         try:
             shop_image = "https:" + shop_image.a.img["data-original"]
         except KeyError:
