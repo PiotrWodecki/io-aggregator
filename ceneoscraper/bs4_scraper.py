@@ -4,6 +4,7 @@ import requests
 import time
 import json
 import html
+import re
 
 
 def prepare_link(name, category):
@@ -44,12 +45,33 @@ def get_products(link_to_main_page):
         "div", class_="add-to-favorite__container"
     )  # add to favourite class is always present
     products_names = products_part[0].find_all("strong", class_="cat-prod-row__name")
+    products_images = products_part[0].find_all("div", class_="cat-prod-row__foto")
+    products_price = products_part[0].find_all("div", class_="cat-prod-row__price")
     products_list = []
     for counter in range(len(products)):
         product_link = "https://ceneo.pl/" + str(products[counter].span["data-pid"])
         product_name = str(products_names[counter].text).strip()
+        value = products_price[counter].find("span", class_="value").text
+        penny = products_price[counter].find("span", class_="penny").text
+        price_tuple = (str(value), str(penny)[1:])
+        product_price = float(".".join(price_tuple))
+
+        # each element has the "src", but only the first few img tags contain link to the image,
+        # the rest of the images are generated using javascript and "data-original" fields
+        # (not every element has them)
+        try:
+            product_image = "https:" + products_images[counter].a.img["data-original"]
+        except KeyError:
+            product_image = "https:" + products_images[counter].a.img["src"]
+
         products_list.append(
-            {"id": counter, "name": product_name, "link": product_link}
+            {
+                "id": counter,
+                "name": product_name,
+                "link": product_link,
+                "image": product_image,
+                "price": product_price,
+            }
         )
 
     return products_list
@@ -67,6 +89,18 @@ def get_offers(website_link):
 
     content = requests.get(website_link).text
     soup = BeautifulSoup(content, "lxml")
+    pattern = re.compile(r"\.remainingInit\('(.*)',")
+    hidden_offers_script = soup.find_all("script", text=pattern)
+    if hidden_offers_script:
+        matching_text = pattern.search(html.unescape(hidden_offers_script[0].text))
+        if matching_text:
+            hidden_offers_link = "https://www.ceneo.pl/"
+            hidden_offers_link += str(
+                json.loads('{"s":"' + matching_text.group(1) + '"}')["s"]
+            )
+            content = requests.get(hidden_offers_link).text
+
+    soup = BeautifulSoup(content, "lxml")
     offers = soup.find_all(
         "li", class_="product-offers__list__item js_productOfferGroupItem"
     )
@@ -83,6 +117,16 @@ def get_offers(website_link):
         value = details.find("span", class_="value").text
         penny = details.find("span", class_="penny").text
         price_tuple = (str(value), str(penny)[1:])
+        shop_image = offer.find("div", class_="product-offer__store__logo")
+
+        # each element has the "src", but only the first few img tags contain link to the image,
+        # the rest of the images are generated using javascript and "data-original" fields
+        # (not every element has them)
+        try:
+            shop_image = "https:" + shop_image.a.img["data-original"]
+        except KeyError:
+            shop_image = "https:" + shop_image.a.img["src"]
+
         product_price = float(".".join(price_tuple))
         try:
             shop_url = offer.div.div["data-shopurl"]
@@ -148,6 +192,7 @@ def get_offers(website_link):
                 "id": counter,
                 "price": product_price,
                 "shop_url": shop_url,
+                "shop_image": shop_image,
                 "description": product_description,
                 "link": product_link,
                 "delivery": delivery_list,
@@ -161,7 +206,7 @@ def get_offers(website_link):
 if __name__ == "__main__":
     start_time = time.time()
     categories = ["", "Zdrowie", "Uroda"]
-    entered_string = "lalka"
+    entered_string = "gripex"
     ready_link = prepare_link(entered_string, categories[0])
     print(ready_link)
     propos = get_products(ready_link)
