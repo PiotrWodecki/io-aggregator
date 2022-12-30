@@ -13,7 +13,7 @@
                     <div class="card-footer">
                         <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
                         <span class="mt-2" style="float:right;">
-                                Cena: {{ product.price }}zł
+                                Cena: {{ product.price|floatformat:2 }}zł
                         </span>
                     </div>
                 </div>
