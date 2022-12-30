@@ -71,7 +71,7 @@ def get_products(link_to_main_page):
         value = products_price[counter].find("span", class_="value").text
         penny = products_price[counter].find("span", class_="penny").text
         price_tuple = (str(value), str(penny)[1:])
-        product_price = float(".".join(price_tuple))
+        product_price = float(".".join(price_tuple).replace(" ", ""))
         try:
             product_image = "https:" + products_images[counter].a.img["data-original"]
         except KeyError:
@@ -136,7 +136,7 @@ def get_offers(website_link):
         except KeyError:
             shop_image = "https:" + shop_image.a.img["src"]
 
-        product_price = float(".".join(price_tuple))
+        product_price = float(".".join(price_tuple).replace(" ", ""))
         try:
             shop_url = offer.div.div["data-shopurl"]
             delivery_data_link = (
