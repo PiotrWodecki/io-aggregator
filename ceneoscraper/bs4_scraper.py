@@ -42,7 +42,12 @@ def get_products(link_to_main_page):
     # category is present between the "/" and ";" characters
     # if they are present together, it means that the category
     # has been removed from the url via a redirect
-    if request.status_code == 302 and "/;" in request.headers["Location"]:
+    if (
+        request.status_code == 302
+        and "/;" in request.headers["Location"]  # category removed
+        or request.status_code == 500  # invalid request, e.g. too short
+        or request.status_code == 301  # e.g. empty string
+    ):
         return None
 
     content = request.text
