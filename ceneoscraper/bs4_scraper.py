@@ -10,7 +10,7 @@ import re
 def prepare_link(name, category):
     """
     Enter the product name and its category.
-    The function returns a link to the search query as a string.
+    The function returns a sanitized link to the search query as a string.
     """
     # fmt: off
     special_characters = [
@@ -32,8 +32,8 @@ def prepare_link(name, category):
 def get_products(link_to_main_page):
     """
     Enter the link to the search query. The function returns a list of
-    dictionaries. The dictionary consists of the id, name and link of one
-    product that the user may be interested in.
+    dictionaries. The dictionary consists of the id, name, product url,
+    image url and the lowest price.
     """
 
     # Disallow redirects which can occur in two cases:
