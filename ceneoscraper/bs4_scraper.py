@@ -14,15 +14,17 @@ def prepare_link(name, category):
     """
     # fmt: off
     special_characters = [
-        "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "-", "+", "=",
-        "{", "}", ":", ";", "|", "\\", '"', "'", ",", "<", ".", ">", "/", "?"
+        "`", "~", "#", "%", "^", "&", "*", "-", "+", "=", "{", "}",
+        ":", ";", "|", "\\", '"', "'", ",", "<", ".", ">", "/", "?"
     ]
     # fmt: on
     for char in special_characters:
-        name = name.replace(char, "")
+        name = name.replace(char, " ")
 
-    name = " ".join(name.split())  # remove multiple whitespace characters
-    link = "https://www.ceneo.pl/" + category + ";szukaj-" + quote_plus(name.lower())
+    name = (
+        " ".join(name.split()).strip().lower()
+    )  # remove multiple whitespace characters, lower case, and strip
+    link = "https://www.ceneo.pl/" + category + ";szukaj-" + quote_plus(name)
 
     return link
 
