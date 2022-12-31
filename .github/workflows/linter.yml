@@ -19,5 +19,4 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_PYTHON_BLACK: true
-          VALIDATE_HTML: true
           DEFAULT_BRANCH: main

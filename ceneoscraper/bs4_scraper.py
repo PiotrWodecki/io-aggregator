@@ -10,18 +10,20 @@ import re
 def prepare_link(name, category):
     """
     Enter the product name and its category.
-    The function returns a link to the search query as a string.
+    The function returns a sanitized link to the search query as a string.
     """
     # fmt: off
     special_characters = [
-        "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "-", "+", "=",
-        "{", "}", ":", ";", "|", "\\", '"', "'", ",", "<", ".", ">", "/", "?"
+        "`", "~", "#", "%", "^", "&", "*", "-", "+", "=", "{", "}",
+        ":", ";", "|", "\\", '"', "'", ",", "<", ".", ">", "/", "?"
     ]
     # fmt: on
     for char in special_characters:
-        name = name.replace(char, "")
+        name = name.replace(char, " ")
 
-    name = " ".join(name.split())  # remove multiple whitespace characters
+    name = (
+        " ".join(name.split()).strip().lower()
+    )  # remove multiple whitespace characters, lower case, and strip
     link = "https://www.ceneo.pl/" + category + ";szukaj-" + quote_plus(name)
 
     return link
@@ -30,11 +32,28 @@ def prepare_link(name, category):
 def get_products(link_to_main_page):
     """
     Enter the link to the search query. The function returns a list of
-    dictionaries. The dictionary consists of the id, name and link of one
-    product that the user may be interested in.
+    dictionaries. The dictionary consists of the id, name, product url,
+    image url and the lowest price.
     """
 
-    content = requests.get(link_to_main_page).text
+    # Disallow redirects which can occur in two cases:
+    # 1. when only a single product is found
+    # 2. when the search result is empty the category is removed
+    request = requests.get(link_to_main_page, allow_redirects=False)
+
+    # category is present between the "/" and ";" characters
+    # if they are present together, it means that the category
+    # has been removed from the url via a redirect
+    if (
+        request.status_code == 302
+        and "/;" in request.headers["Location"]  # category removed
+        or request.status_code == 500  # invalid request, e.g. too short
+        or request.status_code == 301  # e.g. empty string
+    ):
+        return None
+
+    content = request.text
+
     soup = BeautifulSoup(content, "lxml")
     products_part = soup.find_all(
         "div",
@@ -54,7 +73,7 @@ def get_products(link_to_main_page):
         value = products_price[counter].find("span", class_="value").text
         penny = products_price[counter].find("span", class_="penny").text
         price_tuple = (str(value), str(penny)[1:])
-        product_price = float(".".join(price_tuple))
+        product_price = float(".".join(price_tuple).replace(" ", ""))
 
         # each element has the "src", but only the first few img tags contain link to the image,
         # the rest of the images are generated using javascript and "data-original" fields
@@ -127,7 +146,7 @@ def get_offers(website_link):
         except KeyError:
             shop_image = "https:" + shop_image.a.img["src"]
 
-        product_price = float(".".join(price_tuple))
+        product_price = float(".".join(price_tuple).replace(" ", ""))
         try:
             shop_url = offer.div.div["data-shopurl"]
             delivery_data_link = (

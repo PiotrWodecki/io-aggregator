@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% extends 'shopping/search.html' %}
+{% block results %}
+<div class="col container mt-5" style="display: inline-block; vertical-align: top">
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ product.name }}</h6>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
+                        <span class="mt-2" style="float:right;">
+                                Cena: {{ product.price|floatformat:2 }}zł
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

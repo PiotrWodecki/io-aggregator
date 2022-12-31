@@ -2,12 +2,11 @@
 {% extends 'base.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
-
 {% block content %}
-    <div style="margin:80px; width: 20%">
-        <form method="post" class="my-class">
-            {% csrf_token %}
-            {% crispy form %}
-        </form>
+    <div class="col-md-auto mt-5">
+        {% csrf_token %}
+        {% crispy form %}
     </div>
+    {% block results %}
+    {% endblock %}
 {% endblock %}
