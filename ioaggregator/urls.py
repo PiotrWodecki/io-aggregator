@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django_email_verification import urls as email_urls
 
 import core.views
 import user.views
@@ -23,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/signup", user.views.SignUpView.as_view(), name="signup"),
+    path("", include(email_urls)),
     path("", core.views.search, name="search"),
     path("search/", core.views.select_product, name="select_product"),
 ]
