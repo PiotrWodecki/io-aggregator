@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% block title %}Potwierdzenie adresu email{% endblock %}
 {% block content %}
     {% if success %}
-        {{ user.username }}, your account is confirmed!
+        <p>{{ user.username }}, Twoje konto jest teraz aktywne!</p>
     {% else %}
-        Error, invalid token!
+        <p>Błąd - niepoprawny token!</p>
     {% endif %}
 {% endblock %}
