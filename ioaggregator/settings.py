@@ -153,11 +153,12 @@ EMAIL_MAIL_HTML = "email/mail_body.html"
 EMAIL_MAIL_PLAIN = "email/mail_body.txt"
 EMAIL_MAIL_TOKEN_LIFE = 60 * 60
 EMAIL_MAIL_PAGE_TEMPLATE = "registration/confirm_email.html"
-EMAIL_PAGE_DOMAIN = "http://internetoweokazje.com/"
+EMAIL_PAGE_DOMAIN = "http://localhost:8000/"
 EMAIL_MULTI_USER = True  # optional (defaults to False)
 
 # For Django Email Backend
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "/tmp/app-messages"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "mymail@example.com"
