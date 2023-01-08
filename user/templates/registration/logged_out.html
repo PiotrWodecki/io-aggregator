@@ -1,7 +1,6 @@
-{% extends "base.html" %}
+{% block title %}Wylogowano{% endblock %}
 {% block content %}
-<div class="col-md-auto mt-5">
-    <h3>Wylogowano</h3>
+<div class="col-md-auto">
     <a href="{% url 'login' %}">Zaloguj się ponownie</a>
 </div>
 {% endblock %}

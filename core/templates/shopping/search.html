@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% block title %}Wyszukiwanie produktu{% endblock %}
 {% block content %}
-    <div class="col-md-auto mt-5">
+    <div class="col-md-auto mt-3">
         {% csrf_token %}
         {% crispy form %}
     </div>
