@@ -1,6 +1,7 @@
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView
-from django_email_verification import send_email
+from django_email_verification import send_email, verify_view, verify_token
 
 from user import forms
 
@@ -18,3 +19,17 @@ class SignUpView(FormView):
             user.save()
             send_email(user)
         return response
+
+
+@verify_view
+def confirm_email(request, token):
+    success, user = verify_token(token)
+    if success:
+        user.is_active = True
+        user.save()
+
+    return render(
+        request,
+        "registration/confirm_email.html",
+        {"success": success, "username": user.username},
+    )

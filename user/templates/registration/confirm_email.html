@@ -2,8 +2,8 @@
 {% block title %}Potwierdzenie adresu email{% endblock %}
 {% block content %}
     {% if success %}
-        <p>{{ user.username }}, Twoje konto jest teraz aktywne!</p>
+        <p>{{ username }}, Twoje konto jest teraz aktywne!</p>
     {% else %}
-        <p>Błąd - niepoprawny token!</p>
+        <p>Błąd - niepoprawny link!</p>
     {% endif %}
 {% endblock %}
