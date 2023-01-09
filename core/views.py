@@ -54,7 +54,17 @@ def multi_product(request):
                 shop_selection = line[1]
                 category = line[2]
                 quantity = line[3]
-                print("q="+product_query + "\nshop="+shop_selection + "\ncategory="+category + "\nquantity="+quantity + "\n")
+                print(
+                    "q="
+                    + product_query
+                    + "\nshop="
+                    + shop_selection
+                    + "\ncategory="
+                    + category
+                    + "\nquantity="
+                    + quantity
+                    + "\n"
+                )
                 search_url = scraper.prepare_link(product_query, category)
                 products = scraper.get_products(search_url)
                 if products is None:
@@ -68,7 +78,11 @@ def multi_product(request):
                     },
                 )
                 count += 1
-            return render(request, "shopping/multi_search.html", {"rendered": rendered, "form": form})
+            return render(
+                request,
+                "shopping/multi_search.html",
+                {"rendered": rendered, "form": form},
+            )
     else:
         form = MultiSearchFrom()
     return render(request, "shopping/search.html", {"form": form})
