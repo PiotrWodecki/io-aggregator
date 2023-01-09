@@ -23,21 +23,27 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'search' %}">Szukaj</a>
                 </li>
-
+            </ul>
+        </div>
+        <div class="col">
+            <ul class="navbar-nav justify-content-end me-auto mb-2 mb-lg-0">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'search' %}">Konto</a>
+                        <a class="nav-link active" aria-current="page" href="{% url 'search' %}"><img
+                                src="{% static 'user.svg' %}" alt="user" width="30" height="24" class="d-inline-block align-text-top"/>{{ user.username }}</a>
+                    </li>
+                    <li class="nav-item mt-1">
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger" role="button">Wyloguj</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item px-3 mt-1">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary" role="button">Zaloguj</a>
+                    </li>
+                    <li class="nav-item mt-1">
+                        <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Zarejestruj</a>
                     </li>
                 {% endif %}
             </ul>
-        </div>
-        <div class="col text-end">
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn btn-outline-danger" role="button">Wyloguj</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-primary" role="button">Zaloguj</a>
-                <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Zarejestruj</a>
-            {% endif %}
         </div>
 
     </div>
