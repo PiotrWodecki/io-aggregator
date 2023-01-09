@@ -42,3 +42,19 @@ class SearchForm(forms.Form):
         initial="Zdrowie",
         label="Wybierz kategorię:",
     )
+
+
+# maybe it should be in `validators.py` but for now it is only one
+def validate_file_extension(value):
+    import os
+    from django.core.exceptions import ValidationError
+
+    ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
+    valid_extensions = [".txt", ".csv"]
+    if not ext.lower() in valid_extensions:
+        raise ValidationError("Unsupported file extension.")
+
+
+class MultiSearchFrom(forms.Form):
+    title = forms.CharField(max_length=10)
+    file = forms.FileField(validators=[validate_file_extension])

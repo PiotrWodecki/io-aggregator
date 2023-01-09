@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", core.views.search, name="search"),
     path("search/", core.views.select_product, name="select_product"),
+    path("multi-search/", core.views.multi_product, name="multi_search"),
 ]
