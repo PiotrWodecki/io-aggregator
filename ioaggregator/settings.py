@@ -148,7 +148,7 @@ def verified_callback(user):
 
 EMAIL_VERIFIED_CALLBACK = verified_callback
 EMAIL_FROM_ADDRESS = "internetoweokazje1@gmail.com"
-EMAIL_MAIL_SUBJECT = "Internetowe Okazje - Potwierdzenie adresu email"
+EMAIL_MAIL_SUBJECT = "InternetoweOkazje - Potwierdzenie adresu email"
 EMAIL_MAIL_HTML = "email/mail_body.html"
 EMAIL_MAIL_PLAIN = "email/mail_body.txt"
 EMAIL_MAIL_TOKEN_LIFE = 60 * 60
