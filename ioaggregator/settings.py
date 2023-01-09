@@ -147,23 +147,25 @@ def verified_callback(user):
 
 
 EMAIL_VERIFIED_CALLBACK = verified_callback
-EMAIL_FROM_ADDRESS = "noreply@internetoweokazje.com"
+EMAIL_FROM_ADDRESS = "internetoweokazje1@gmail.com"
 EMAIL_MAIL_SUBJECT = "Internetowe Okazje - Potwierdzenie adresu email"
 EMAIL_MAIL_HTML = "email/mail_body.html"
 EMAIL_MAIL_PLAIN = "email/mail_body.txt"
 EMAIL_MAIL_TOKEN_LIFE = 60 * 60
 EMAIL_MAIL_PAGE_TEMPLATE = "registration/confirm_email.html"
-EMAIL_PAGE_DOMAIN = "http://localhost:8000/"
+EMAIL_PAGE_DOMAIN = "http://10.160.73.85/"
 EMAIL_MULTI_USER = True  # optional (defaults to False)
 
-# For Django Email Backend
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = "/tmp/app-messages"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "mymail@example.com"
+
 try:
-    EMAIL_HOST_PASSWORD = os.environ["password_key"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 except KeyError:
+    EMAIL_HOST_USER = "internetoweokazje@localhost"
     EMAIL_HOST_PASSWORD = ""
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_USE_TLS = True
