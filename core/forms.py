@@ -47,5 +47,15 @@ class SearchForm(forms.Form):
 
 
 class MultiSearchFrom(forms.Form):
-    title = forms.CharField(max_length=10)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_action = reverse("multi_product")
+        self.helper.form_method = "POST"
+        self.helper.layout = Div(
+            Field("file", placeholder="Prześlij listę zakupów"),
+            # using Submit tag causes its value be sent as a URL query string,
+            # this hack solves this problem
+            HTML("<button class=\"btn btn-primary\" type='submit'>Szukaj</button>"),
+        )
     file = forms.FileField(validators=[validate_file_extension])
