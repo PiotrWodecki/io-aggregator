@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from .forms import SearchForm
@@ -38,3 +39,8 @@ def select_product(request):
             },
         )
     return render(request, "shopping/search.html", {"form": form})
+
+
+@login_required
+def shopping_history(request):
+    return render(request, "shopping/shopping_history.html")
