@@ -30,7 +30,7 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'search' %}"><img
-                                src="{% static 'user.svg' %}" alt="user" width="30" height="24" class="d-inline-block align-text-top"/>{{ user.username }}</a>
+                                src="{% static 'user.svg' %}" alt="user" width="30" height="24" class="d-inline-block align-text-bottom"/>{{ user.username }}</a>
                     </li>
                     <li class="nav-item mt-1">
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger" role="button">Wyloguj</a>
