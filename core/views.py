@@ -26,7 +26,7 @@ def select_product(request):
         except (Exception,):
             messages.error(request, "Wystąpił błąd podczas wyszukiwania produktu")
             return render(request, "shopping/search.html", {"form": form})
-        if products is None:
+        if products is None or len(products) == 0:
             messages.error(request, "Brak wyników wyszukiwania")
         return render(
             request,
