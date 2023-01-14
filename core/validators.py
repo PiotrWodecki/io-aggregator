@@ -20,7 +20,7 @@ def validate_multi_search_files_row(row):
         if row[2] not in ["Zdrowie", "Uroda"]:
             # there are two types of category
             return False
-        if 10 <= int(row[3]) or int(row[3]) <= 0:
+        if int(row[3]) <= 0 or int(row[3]) > 10:
             # quantity can not be less than 1
             return False
         return True
