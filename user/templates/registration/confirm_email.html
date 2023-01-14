@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Potwierdzenie adresu email{% endblock %}
+{% block content %}
+    {% if success %}
+        <p>{{ username }}, Twoje konto jest teraz aktywne! Możesz się teraz <a href="{% url 'login' %}">zalogować</a>.</p>
+    {% else %}
+        <p>Błąd - niepoprawny link!</p>
+    {% endif %}
+{% endblock %}

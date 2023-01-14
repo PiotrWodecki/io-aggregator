@@ -1,0 +1,3 @@
+Już prawie, {{ user.username }}!
+Kliknij w podany link, aby potwierdzić swoje konto: {{ link }}
+Link wygaśnie o {{ expiry|time:"TIME_FORMAT" }}
