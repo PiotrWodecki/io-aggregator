@@ -87,4 +87,3 @@ def multi_product(request):
 @login_required
 def shopping_history(request):
     return render(request, "shopping/shopping_history.html")
-
