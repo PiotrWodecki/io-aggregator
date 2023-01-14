@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% extends 'shopping/search.html' %}
 {% block results %}
-    <div class="accordion" id="accordionExample">
+    <div class="accordion col mt-5" id="accordionExample">
     {% for render in rendered %}
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading{{ render.id }}">
