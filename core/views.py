@@ -54,6 +54,10 @@ def multi_product(request):
             rendered = []
             csvfile = file.read().decode("utf-8")
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
+            if sum(1 for row in spam_ereader) > 10:
+                messages.error(request, "Lista zakupów jest zbyt długa")
+                form = MultiSearchFrom()
+                return render(request, "shopping/search.html", {"form": form})
             for line in spam_ereader:
                 if not validate_multi_search_files_row(line):
                     messages.error(request, "Błąd w liście zakupów")
