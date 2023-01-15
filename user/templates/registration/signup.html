@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% block title %}Rejestracja{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" value="Zarejestruj" class="btn btn-success">
+  </form>
+{% endblock %}

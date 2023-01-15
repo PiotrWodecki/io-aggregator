@@ -9,14 +9,13 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.contrib import messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -28,7 +27,6 @@ SECRET_KEY = "django-insecure-a0jj^v#r&gwom+8-kze2f+he9o^04480&@&20)2!00)c1_dofe
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -45,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_email_verification",
 ]
 
 MIDDLEWARE = [
@@ -77,7 +76,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ioaggregator.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -87,7 +85,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -107,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -118,7 +114,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -141,3 +136,36 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
+
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
+
+
+# signup email verification
+def verified_callback(user):
+    user.is_active = True
+
+
+EMAIL_VERIFIED_CALLBACK = verified_callback
+EMAIL_FROM_ADDRESS = "internetoweokazje1@gmail.com"
+EMAIL_MAIL_SUBJECT = "InternetoweOkazje - Potwierdzenie adresu email"
+EMAIL_MAIL_HTML = "email/mail_body.html"
+EMAIL_MAIL_PLAIN = "email/mail_body.txt"
+EMAIL_MAIL_TOKEN_LIFE = 60 * 60
+EMAIL_MAIL_PAGE_TEMPLATE = "registration/confirm_email.html"
+EMAIL_PAGE_DOMAIN = "http://10.160.73.85/"
+EMAIL_MULTI_USER = True  # optional (defaults to False)
+
+EMAIL_FILE_PATH = "/tmp/app-messages"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+
+try:
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+except KeyError:
+    EMAIL_HOST_USER = "internetoweokazje@localhost"
+    EMAIL_HOST_PASSWORD = ""
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_USE_TLS = True
