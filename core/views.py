@@ -8,6 +8,7 @@ from django.contrib import messages
 
 from .models import CartMemory
 
+
 def search(request):
     form = SearchForm()
     return render(request, "shopping/search.html", {"form": form})
@@ -47,6 +48,7 @@ def select_product(request):
 def shopping_history(request):
     return render(request, "shopping/shopping_history.html")
 
+
 @csrf_protect
 def add_product(request):
     search_word = request.POST
@@ -72,14 +74,15 @@ def add_product(request):
     print(dictionary)
 
     # To save data
-    #b = CartMemory(login="testlogin", session="21372", link=dictionary['link'], price=dictionary['price'], quantity=dictionary['quantity'])
-    #print(b.filter(login="testlogin"))
-    #b.save()
+    b = CartMemory(login="testlogin", session="21372", link=dictionary['link'],
+                   price=dictionary['price'], quantity=dictionary['quantity'])
+    print(b)
+    # b.save()
 
     # Example to get specific row from memory
-    #c = CartMemory.objects.filter(login="testlogin").values()
+    # c = CartMemory.objects.filter(login="testlogin").values()
     # It return nice .json
-    #for x in c:
+    # for x in c:
     #  print(x)
 
     # Stay on same side

@@ -1,15 +1,14 @@
 from django.db import models
 
-#Cart`s memory object
+# Cart`s memory object
+
+
 class CartMemory(models.Model):
     login = models.CharField(max_length=30)
     session = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
-    #Well, there should bo no limit to price, am I right? :3
     price = models.FloatField()
     quantity = models.IntegerField()
-    #I nie wiem co jeszcze :c
-
 
 
 class Product(models.Model):
