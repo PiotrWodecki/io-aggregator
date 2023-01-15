@@ -121,8 +121,6 @@ def add_product(request):
 
     dictionary["quantity"] = int(search_word["getNumber"])
 
-    print(dictionary)
-
     # To save data
     b = CartMemory(
         login="testlogin",
