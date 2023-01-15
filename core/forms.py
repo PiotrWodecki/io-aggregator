@@ -1,7 +1,9 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Field, HTML
-from django.urls import reverse
+from crispy_forms.layout import Div, Field, HTML, Submit
+from django.urls import reverse, reverse_lazy
+
+from core.validators import validate_file_extension
 
 
 class SearchForm(forms.Form):
@@ -42,3 +44,12 @@ class SearchForm(forms.Form):
         initial="Zdrowie",
         label="Wybierz kategorię:",
     )
+
+
+class MultiSearchFrom(forms.Form):
+    helper = FormHelper()
+    helper.form_action = reverse_lazy("multi_product")
+    helper.form_method = "POST"
+    helper.add_input(Submit("submit", "Wyszukaj"))
+
+    file = forms.FileField(validators=[validate_file_extension], label="Wybierz plik")

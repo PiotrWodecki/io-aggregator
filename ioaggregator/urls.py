@@ -26,6 +26,7 @@ urlpatterns = [
     path("email/<str:token>/", user.views.confirm_email, name="email_confirm"),
     path("", core.views.search, name="search"),
     path("search/", core.views.select_product, name="select_product"),
+    path("multi-search/", core.views.multi_product, name="multi_product"),
     path("history/", core.views.shopping_history, name="shopping_history"),
     path("search/add_to_shop/", core.views.add_product, name="add_product"),
 ]
