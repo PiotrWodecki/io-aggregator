@@ -4,17 +4,41 @@
 <div class="col container mt-4" style="display: inline-block; vertical-align: top">
     <div class="row">
         {% for product in products %}
-            <div class="col-md-4 mb-5">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
                     <div class="card-body">
                         <h6 class="card-title">{{ product.name }}</h6>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
-                        <span class="mt-2" style="float:right;">
+                        <div class="d-flex flex-wrap mt-2">
+                            <div class="d-flex me-2 mb-1">
+                                <a href="{{ product.link }}"
+                                   class="btn btn-primary btn-block add-btn"
+                                   id="add{{ forloop.counter }}">Dodaj
+                                </a>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="amount-button"
+                                     id="decrease"
+                                     onclick="decreaseValue({{ forloop.counter }})"
+                                     value="Decrease Value">-
+                                </div>
+                                <div class="amount">
+                                    <input class="number" type="number" id="number{{ forloop.counter }}" value="0"/>
+                                </div>
+                                <div class="amount-button"
+                                     id="increase"
+                                     onclick="increaseValue({{ forloop.counter }})"
+                                     value="Increase Value">+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bot-field">
+                            <span class="price-field">
                                 Cena: {{ product.price|floatformat:2 }}zł
-                        </span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
