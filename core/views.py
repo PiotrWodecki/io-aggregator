@@ -103,7 +103,7 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
-    s = str(search_word['product'])
+    s = str(search_word["product"])
     s = s.replace("{", "")
     finalstring = s.replace("}, ", "")
     # print(finalstring)
@@ -118,15 +118,20 @@ def add_product(request):
         m = keyvalue[0].strip("'").strip(" '")
         dictionary[m] = keyvalue[1].strip("'")
 
-    dictionary['price'] = dictionary['price'].replace('}', '')
+    dictionary["price"] = dictionary["price"].replace("}", "")
 
-    dictionary['quantity'] = int(search_word['getNumber'])
+    dictionary["quantity"] = int(search_word["getNumber"])
 
     print(dictionary)
 
     # To save data
-    b = CartMemory(login="testlogin", session="21372", link=dictionary['link'],
-                   price=dictionary['price'], quantity=dictionary['quantity'])
+    b = CartMemory(
+        login="testlogin",
+        session="21372",
+        link=dictionary["link"],
+        price=dictionary["price"],
+        quantity=dictionary["quantity"],
+    )
     print(b)
     # b.save()
 
@@ -137,4 +142,4 @@ def add_product(request):
     #  print(x)
 
     # Stay on same side
-    return redirect(request.META['HTTP_REFERER'])
+    return redirect(request.META["HTTP_REFERER"])
