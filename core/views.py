@@ -64,7 +64,7 @@ def multi_product(request):
                 if not validate_multi_search_files_row(line):
                     messages.error(request, "Błąd w liście zakupów")
                     form = MultiSearchFrom()
-                    return render(request, "shopping/search.html", {"form": form})
+                    return render(request, "shopping/multi_search.html", {"form": form})
                 product_query = line[0]
                 shop_selection = line[1]
                 category = line[2]
@@ -87,7 +87,7 @@ def multi_product(request):
             )
     else:
         form = MultiSearchFrom()
-    return render(request, "shopping/search.html", {"form": form})
+    return render(request, "shopping/multi_search.html", {"form": form})
 
 
 @login_required

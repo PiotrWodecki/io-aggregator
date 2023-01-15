@@ -1,39 +1,72 @@
 <!DOCTYPE html>
 {% extends 'shopping/search.html' %}
+{% block title %}Wyszukaj plikiem{% endblock %}
+{% block additional_help %}
+    <p>
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseExample"
+                aria-expanded="false" aria-controls="collapseExample">
+            Jak wyszukać plikiem?
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            <p>Aby wyszukać kilka produktów jednocześnie, należy przesłać plik w formacie csv lub txt. Struktura takiego
+                pliku
+                powinna być następująca:</p>
+            <p><code>nazwa produktu,filtr sklepu,kateogoria,liczba zakupowanego produktu</code></p>
+            <p>Dokładny opis parametrów:<br>
+            <ul>
+                <li>nazwa produktu - dowolny tekst</li>
+                <li>filtr sklepu: 1 - wszyskie sklepy, 2 - tylko Allegro, 3 - tylko Ceneo</li>
+                <li>kategoria: Zdrowie lub Uroda</li>
+                <li>liczba zakupowanego produktu: liczba całkowita w przedziale od 1 do 10</li>
+            </ul>
+            </p>
+            <p>Plik nie może posiadać nagłówka. Dozwolone są puste linie, a maksymalna liczba produktów pliku wynosi 10.</p>
+        </div>
+    </div>
+
+{% endblock %}
 {% block results %}
-    <div class="accordion col mt-5" id="accordionExample">
-    {% for render in rendered %}
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading{{ render.id }}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ render.id }}" aria-expanded="true" aria-controls="collapse{{ render.id }}">
-                    {{ render.product_query }}
-                </button>
-            </h2>
-            <div id="collapse{{render.id}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{render.id}}" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    <div class="col container mt-5" style="display: inline-block; vertical-align: top">
-                        <div class="row">
-                            {% for product in render.products %}
-                                <div class="col-md-4 mb-5">
-                                    <div class="card h-100">
-                                        <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
-                                        <div class="card-body">
-                                            <h6 class="card-title">{{ product.name }}</h6>
-                                        </div>
-                                        <div class="card-footer">
-                                            <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
-                                            <span class="mt-2" style="float:right;">
+    <div class="accordion col mt-1" id="accordionExample">
+        {% for render in rendered %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ render.id }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse{{ render.id }}" aria-expanded="true"
+                            aria-controls="collapse{{ render.id }}">
+                        {{ render.product_query }}
+                    </button>
+                </h2>
+                <div id="collapse{{ render.id }}"
+                     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                     aria-labelledby="heading{{ render.id }}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="col container mt-5" style="display: inline-block; vertical-align: top">
+                            <div class="row">
+                                {% for product in render.products %}
+                                    <div class="col-md-4 mb-5">
+                                        <div class="card h-100">
+                                            <img src="{{ product.image }}" class="card-img-top"
+                                                 alt="{{ product.name }}">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ product.name }}</h6>
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
+                                                <span class="mt-2" style="float:right;">
                                                     Cena: {{ product.price|floatformat:2 }}zł
                                             </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
     </div>
 {% endblock %}
