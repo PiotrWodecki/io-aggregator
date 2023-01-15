@@ -59,6 +59,8 @@ def multi_product(request):
                 form = MultiSearchFrom()
                 return render(request, "shopping/search.html", {"form": form})
             for line in spam_ereader:
+                if len(line) == 0:
+                    continue
                 if not validate_multi_search_files_row(line):
                     messages.error(request, "Błąd w liście zakupów")
                     form = MultiSearchFrom()
