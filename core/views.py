@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_protect
 
 from .forms import SearchForm
 from ceneoscraper import bs4_scraper as scraper
 from django.contrib import messages
 
+from .models import CartMemory
 
 def search(request):
     form = SearchForm()
@@ -44,3 +46,41 @@ def select_product(request):
 @login_required
 def shopping_history(request):
     return render(request, "shopping/shopping_history.html")
+
+@csrf_protect
+def add_product(request):
+    search_word = request.POST
+    s = str(search_word['product'])
+    s = s.replace("{", "")
+    finalstring = s.replace("}, ", "")
+    # print(finalstring)
+
+    # Splitting the string based on , we get key value pairs
+    lista = finalstring.split(",")
+    dictionary = {}
+    for i in lista:
+        # Get Key Value pairs separately to store in dictionary
+        keyvalue = i.split(": ")
+        # Replacing the single quotes in the leading.
+        m = keyvalue[0].strip("'").strip(" '")
+        dictionary[m] = keyvalue[1].strip("'")
+
+    dictionary['price'] = dictionary['price'].replace('}', '')
+
+    dictionary['quantity'] = int(search_word['getNumber'])
+
+    print(dictionary)
+
+    # To save data
+    #b = CartMemory(login="testlogin", session="21372", link=dictionary['link'], price=dictionary['price'], quantity=dictionary['quantity'])
+    #print(b.filter(login="testlogin"))
+    #b.save()
+
+    # Example to get specific row from memory
+    #c = CartMemory.objects.filter(login="testlogin").values()
+    # It return nice .json
+    #for x in c:
+    #  print(x)
+
+    # Stay on same side
+    return redirect(request.META['HTTP_REFERER'])
