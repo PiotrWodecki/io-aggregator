@@ -2,6 +2,8 @@
 {% load crispy_forms_tags %}
 {% block title %}Wyszukiwanie produktu{% endblock %}
 {% block content %}
+    {% block additional_help %}
+    {% endblock %}
     <div class="col-md-auto mt-3">
         {% csrf_token %}
         {% crispy form %}

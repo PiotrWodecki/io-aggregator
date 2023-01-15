@@ -1,9 +1,13 @@
+import csv
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-
-from .forms import SearchForm
-from ceneoscraper import bs4_scraper as scraper
 from django.contrib import messages
+from io import StringIO
+
+from ceneoscraper import bs4_scraper as scraper
+from .forms import SearchForm
+from .forms import MultiSearchFrom
+from core.validators import validate_multi_search_files_row
 
 
 def search(request):
@@ -39,6 +43,51 @@ def select_product(request):
             },
         )
     return render(request, "shopping/search.html", {"form": form})
+
+
+def multi_product(request):
+    if request.method == "POST":
+        form = MultiSearchFrom(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["file"]
+            count = 0
+            rendered = []
+            csvfile = file.read().decode("utf-8")
+            spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
+            if spam_ereader.line_num > 10:
+                messages.error(request, "Lista zakupów jest zbyt długa")
+                form = MultiSearchFrom()
+                return render(request, "shopping/search.html", {"form": form})
+            for line in spam_ereader:
+                if len(line) == 0:
+                    continue
+                if not validate_multi_search_files_row(line):
+                    messages.error(request, "Błąd w liście zakupów")
+                    form = MultiSearchFrom()
+                    return render(request, "shopping/multi_search.html", {"form": form})
+                product_query = line[0]
+                shop_selection = line[1]
+                category = line[2]
+                quantity = line[3]
+                search_url = scraper.prepare_link(product_query, category)
+                products = scraper.get_products(search_url)
+                rendered.append(
+                    {
+                        "id": count,
+                        "product_query": product_query,
+                        "shop_selection": shop_selection,
+                        "products": products,
+                    },
+                )
+                count += 1
+            return render(
+                request,
+                "shopping/multi_search.html",
+                {"rendered": rendered, "form": form},
+            )
+    else:
+        form = MultiSearchFrom()
+    return render(request, "shopping/multi_search.html", {"form": form})
 
 
 @login_required
