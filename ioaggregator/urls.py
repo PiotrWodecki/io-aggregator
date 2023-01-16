@@ -28,5 +28,5 @@ urlpatterns = [
     path("search/", core.views.select_product, name="select_product"),
     path("multi-search/", core.views.multi_product, name="multi_product"),
     path("history/", core.views.shopping_history, name="shopping_history"),
-    path("search/add_to_shop/", core.views.add_product, name="add_product"),
+    path("search/add_product/", core.views.add_product, name="add_product"),
 ]

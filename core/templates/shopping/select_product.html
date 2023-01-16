@@ -33,7 +33,7 @@
                         <div class="bot-field">
                             <span class="price-field">
 
-                        <form action="add_to_shop/" method="post">
+                        <form action="add_product/" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="product" id="{{ forloop.counter }}" value="{{ product }}" />
                             <input type="hidden" name="getNumber" value="0" id="amount{{ forloop.counter }}"/>
