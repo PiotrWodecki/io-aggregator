@@ -46,7 +46,6 @@ def get_products(link_to_main_page, option):
 
     if option == 2:
         link_to_main_page = link_to_main_page + ";20136-0v.htm"
-        print(link_to_main_page)
 
     # Disallow redirects which can occur in two cases:
     # 1. when only a single product is found
@@ -107,17 +106,9 @@ def get_products(link_to_main_page, option):
         except KeyError:
             product_image = "https:" + products_images[counter].a.img["src"]
 
+        shop_url = ""
         if option == 2:
-            products_list.append(
-                {
-                    "id": counter,
-                    "name": product_name,
-                    "link": product_link,
-                    "image": product_image,
-                    "price": product_price,
-                    "shop_url": "allegro.pl",
-                }
-            )
+            shop_url = "allegro.pl"
         elif option == 1 or option == 3:
             try:
                 shop_numb = (
@@ -125,7 +116,7 @@ def get_products(link_to_main_page, option):
                 )
                 shop_numb = (shop_numb.split())[1]
                 shop_numb = int(shop_numb.strip())
-            except:
+            except (AttributeError, IndexError):
                 shop_numb = 1
 
             if shop_numb is None or shop_numb == "":
@@ -146,94 +137,38 @@ def get_products(link_to_main_page, option):
             if option == 3:
                 if shop_numb == 1:
                     if "allegro" in shop_url:
-                        pass
-                    elif "allegro" not in shop_url and shop_url != "":
-                        products_list.append(
-                            {
-                                "id": counter,
-                                "name": product_name,
-                                "link": product_link,
-                                "image": product_image,
-                                "price": product_price,
-                                "shop_url": shop_url,
-                            }
-                        )
-                    else:
+                        continue
+                    elif shop_url == "":
                         try:
                             offer = get_offers(product_link)
                             shop_url = offer[0]["shop_url"]
-                        except:
+                        except (Exception,):
                             shop_url = ""
 
                         if "allegro" in shop_url or shop_url == "" or shop_url is None:
-                            pass
-                        else:
-                            products_list.append(
-                                {
-                                    "id": counter,
-                                    "name": product_name,
-                                    "link": product_link,
-                                    "image": product_image,
-                                    "price": product_price,
-                                    "shop_url": shop_url,
-                                }
-                            )
-                else:
-                    products_list.append(
-                        {
-                            "id": counter,
-                            "name": product_name,
-                            "link": product_link,
-                            "image": product_image,
-                            "price": product_price,
-                            "shop_url": shop_url,
-                        }
-                    )
+                            continue
 
-            if option == 1:
-                if shop_numb == 1:
-                    if shop_url != "" and shop_url is not None:
-                        products_list.append(
-                            {
-                                "id": counter,
-                                "name": product_name,
-                                "link": product_link,
-                                "image": product_image,
-                                "price": product_price,
-                                "shop_url": shop_url,
-                            }
-                        )
-                    else:
-                        try:
-                            offer = get_offers(product_link)
-                            shop_url = offer[0]["shop_url"]
-                        except:
-                            shop_url = ""
+            if option == 1 and shop_numb == 1:
+                if shop_url == "" or shop_url is None:
+                    try:
+                        offer = get_offers(product_link)
+                        shop_url = offer[0]["shop_url"]
+                    except (Exception,):
+                        shop_url = ""
 
-                        if shop_url == "" or shop_url is None:
-                            pass
-                        else:
-                            products_list.append(
-                                {
-                                    "id": counter,
-                                    "name": product_name,
-                                    "link": product_link,
-                                    "image": product_image,
-                                    "price": product_price,
-                                    "shop_url": shop_url,
-                                }
-                            )
-                else:
-                    products_list.append(
-                        {
-                            "id": counter,
-                            "name": product_name,
-                            "link": product_link,
-                            "image": product_image,
-                            "price": product_price,
-                            "shop_url": shop_url,
-                        }
-                    )
+                    if shop_url == "" or shop_url is None:
+                        continue
+
+        products_list.append(
+            {
+                "id": counter,
+                "name": product_name,
+                "link": product_link,
+                "image": product_image,
+                "price": product_price,
+                "shop_url": shop_url,
+            }
+        )
 
     return products_list
 
