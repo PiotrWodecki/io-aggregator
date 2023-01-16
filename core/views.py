@@ -106,7 +106,6 @@ def add_product(request):
     s = str(search_word["product"])
     s = s.replace("{", "")
     finalstring = s.replace("}, ", "")
-    # print(finalstring)
 
     # Splitting the string based on , we get key value pairs
     lista = finalstring.split(",")
@@ -132,14 +131,17 @@ def add_product(request):
         price=dictionary["price"],
         quantity=dictionary["quantity"],
     )
-    print(b)
-    # b.save()
 
-    # Example to get specific row from memory
-    # c = CartMemory.objects.filter(login="testlogin").values()
-    # It return nice .json
-    # for x in c:
-    #  print(x)
+    b.save()
 
     # Stay on same side
+    return redirect(request.META["HTTP_REFERER"])
+
+
+# Here be function to select cart from database
+def selectCart(request):
+    search_login = request.POST
+    c = CartMemory.objects.filter(login=search_login["login"]).values()
+
+    # I forgor what to return 💀
     return redirect(request.META["HTTP_REFERER"])
