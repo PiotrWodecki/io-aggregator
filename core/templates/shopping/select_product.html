@@ -36,14 +36,17 @@
                         <form action="add_to_shop/" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="product" id="{{ forloop.counter }}" value="{{ product }}" />
-                            <input type="hidden" name="getNumber" value="3" />
-                        <input type="submit" value="Dodaj" class="btn btn-primary btn-block" product="{{ product }}" />
+                            <input type="hidden" name="getNumber" value="0" id="amount{{ forloop.counter }}"/>
+                        <input type="submit" value="Dodaj"
+                               class="btn btn-primary btn-block"
+                               product="{{ product }}"
+                               onclick="getValue({{ forloop.counter }})"
+                        />
                         </form>
 
-                        <span class="mt-2" style="float:right;">
-                                Cena: {{ product.price|floatformat:2 }}zł
-                            </span>
-                        </div>
+                        <span class="mt-2" style="float:right;"> Cena: {{ product.price|floatformat:2 }}zł</span>
+
+                        </span>></div>
                     </div>
                 </div>
             </div>

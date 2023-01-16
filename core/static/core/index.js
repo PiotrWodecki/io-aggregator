@@ -13,3 +13,8 @@ function decreaseValue(id) {
     value--;
     document.getElementById("number" + id).value = value;
 }
+
+function getValue(id){
+    let value = parseInt(document.getElementById("number" + id).value, 10);
+    document.getElementById("amount" + id).value = value;
+}
