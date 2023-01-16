@@ -21,7 +21,9 @@ def select_product(request):
         # to combat this we will capture all exceptions
         # and display a simple message to the user
         try:
-            products = scraper.get_products(search_url)
+            products = []
+            if int(shop_selection) in [1, 2, 3]:
+                products = scraper.get_products(search_url, int(shop_selection))
         except (Exception,):
             messages.error(request, "Wystąpił błąd podczas wyszukiwania produktu")
             return render(request, "shopping/search.html", {"form": form})

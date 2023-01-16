@@ -29,12 +29,24 @@ def prepare_link(name, category):
     return link
 
 
-def get_products(link_to_main_page):
+def get_products(link_to_main_page, option):
     """
-    Enter the link to the search query. The function returns a list of
+    Enter the link and option to the search query. The function returns a list of
     dictionaries. The dictionary consists of the id, name, product url,
-    image url and the lowest price.
+    image url, the lowest price and shop url.
+
+    Options:
+    1 - all shops
+    2 - only allegro
+    3 - any shop without allegro
+
+    Shop url takes value "" when you can buy product at least in 2 shops or name of
+    shop when you can buy product in exactly 1 shop.
     """
+
+    if option == 2:
+        link_to_main_page = link_to_main_page + ";20136-0v.htm"
+        print(link_to_main_page)
 
     # Disallow redirects which can occur in two cases:
     # 1. when only a single product is found
@@ -53,7 +65,6 @@ def get_products(link_to_main_page):
         return None
 
     content = request.text
-
     soup = BeautifulSoup(content, "lxml")
     products_part = soup.find_all(
         "div",
@@ -61,14 +72,27 @@ def get_products(link_to_main_page):
         "js_search-results js_products-list-main js_async-container",
     )
     products = products_part[0].find_all(
-        "div", class_="add-to-favorite__container"
-    )  # add to favourite class is always present
+        "div", class_=re.compile("cat-prod-row js_category-list-item.*")
+    )
+
     products_names = products_part[0].find_all("strong", class_="cat-prod-row__name")
     products_images = products_part[0].find_all("div", class_="cat-prod-row__foto")
     products_price = products_part[0].find_all("div", class_="cat-prod-row__price")
     products_list = []
     for counter in range(len(products)):
-        product_link = "https://ceneo.pl/" + str(products[counter].span["data-pid"])
+        try:
+            product_link = "https://ceneo.pl/" + str(products[counter].span["data-pid"])
+        except KeyError:
+            product_link = "https://ceneo.pl/" + str(products_names[counter].a["href"])
+
+        if "https://ceneo.pl//Click/Offer/?e" in product_link:
+            try:
+                product_link = "https://ceneo.pl/" + str(products[counter]["data-pid"])
+            except KeyError:
+                product_link = "https://ceneo.pl/" + str(
+                    products_names[counter].a["href"]
+                )
+
         product_name = str(products_names[counter].text).strip()
         value = products_price[counter].find("span", class_="value").text
         penny = products_price[counter].find("span", class_="penny").text
@@ -83,15 +107,133 @@ def get_products(link_to_main_page):
         except KeyError:
             product_image = "https:" + products_images[counter].a.img["src"]
 
-        products_list.append(
-            {
-                "id": counter,
-                "name": product_name,
-                "link": product_link,
-                "image": product_image,
-                "price": product_price,
-            }
-        )
+        if option == 2:
+            products_list.append(
+                {
+                    "id": counter,
+                    "name": product_name,
+                    "link": product_link,
+                    "image": product_image,
+                    "price": product_price,
+                    "shop_url": "allegro.pl",
+                }
+            )
+        elif option == 1 or option == 3:
+            try:
+                shop_numb = (
+                    products_price[counter].find("span", class_="shop-numb").text
+                )
+                shop_numb = (shop_numb.split())[1]
+                shop_numb = int(shop_numb.strip())
+            except:
+                shop_numb = 1
+
+            if shop_numb is None or shop_numb == "":
+                shop_numb = 1
+
+            shop_url = ""
+            if shop_numb == 1:
+                try:
+                    shop_url = products[counter]["data-shopurl"]
+                except KeyError:
+                    shop_url = ""
+
+                if "https://" in shop_url:
+                    shop_url = shop_url.removeprefix("https://")
+                elif "http://" in shop_url:
+                    shop_url = shop_url.removeprefix("http://")
+
+            if option == 3:
+                if shop_numb == 1:
+                    if "allegro" in shop_url:
+                        pass
+                    elif "allegro" not in shop_url and shop_url != "":
+                        products_list.append(
+                            {
+                                "id": counter,
+                                "name": product_name,
+                                "link": product_link,
+                                "image": product_image,
+                                "price": product_price,
+                                "shop_url": shop_url,
+                            }
+                        )
+                    else:
+                        try:
+                            offer = get_offers(product_link)
+                            shop_url = offer[0]["shop_url"]
+                        except:
+                            shop_url = ""
+
+                        if "allegro" in shop_url or shop_url == "" or shop_url is None:
+                            pass
+                        else:
+                            products_list.append(
+                                {
+                                    "id": counter,
+                                    "name": product_name,
+                                    "link": product_link,
+                                    "image": product_image,
+                                    "price": product_price,
+                                    "shop_url": shop_url,
+                                }
+                            )
+                else:
+                    products_list.append(
+                        {
+                            "id": counter,
+                            "name": product_name,
+                            "link": product_link,
+                            "image": product_image,
+                            "price": product_price,
+                            "shop_url": shop_url,
+                        }
+                    )
+
+            if option == 1:
+                if shop_numb == 1:
+                    if shop_url != "" and shop_url is not None:
+                        products_list.append(
+                            {
+                                "id": counter,
+                                "name": product_name,
+                                "link": product_link,
+                                "image": product_image,
+                                "price": product_price,
+                                "shop_url": shop_url,
+                            }
+                        )
+                    else:
+                        try:
+                            offer = get_offers(product_link)
+                            shop_url = offer[0]["shop_url"]
+                        except:
+                            shop_url = ""
+
+                        if shop_url == "" or shop_url is None:
+                            pass
+                        else:
+                            products_list.append(
+                                {
+                                    "id": counter,
+                                    "name": product_name,
+                                    "link": product_link,
+                                    "image": product_image,
+                                    "price": product_price,
+                                    "shop_url": shop_url,
+                                }
+                            )
+                else:
+                    products_list.append(
+                        {
+                            "id": counter,
+                            "name": product_name,
+                            "link": product_link,
+                            "image": product_image,
+                            "price": product_price,
+                            "shop_url": shop_url,
+                        }
+                    )
 
     return products_list
 
@@ -108,6 +250,11 @@ def get_offers(website_link):
 
     content = requests.get(website_link).text
     soup = BeautifulSoup(content, "lxml")
+    offers_proposed_by_ceneo = soup.find_all(
+        "ul", class_="product-offers__list js_product-offers"
+    )
+    if offers_proposed_by_ceneo is None:
+        offers_proposed_by_ceneo = ""
     pattern = re.compile(r"\.remainingInit\('(.*)',")
     hidden_offers_script = soup.find_all("script", text=pattern)
     if hidden_offers_script:
@@ -118,8 +265,8 @@ def get_offers(website_link):
                 json.loads('{"s":"' + matching_text.group(1) + '"}')["s"]
             )
             content = requests.get(hidden_offers_link).text
+            soup = BeautifulSoup(str(str(offers_proposed_by_ceneo) + content), "lxml")
 
-    soup = BeautifulSoup(content, "lxml")
     offers = soup.find_all(
         "li", class_="product-offers__list__item js_productOfferGroupItem"
     )
@@ -225,19 +372,19 @@ def get_offers(website_link):
 if __name__ == "__main__":
     start_time = time.time()
     categories = ["", "Zdrowie", "Uroda"]
-    entered_string = "gripex"
-    ready_link = prepare_link(entered_string, categories[0])
+    entered_string = "grdqw"
+    ready_link = prepare_link(entered_string, "Motoryzacja")
     print(ready_link)
-    propos = get_products(ready_link)
+    propos = get_products(ready_link, 1)
     for prop in propos:
         print(prop)
 
     print("Enter id:")
     idd = 0
-    proposition_link = propos[int(idd)].get("link")
-    list_of_products = get_offers(proposition_link)
-    for element in list_of_products:
-        print(element)
+    # proposition_link = propos[int(idd)].get("link")
+    # list_of_products = get_offers("https://www.ceneo.pl/53545456")
+    # for element in list_of_products:
+    #    print(element)
 
     print("Program execution:")
     print("--- %s seconds ---" % (time.time() - start_time))
