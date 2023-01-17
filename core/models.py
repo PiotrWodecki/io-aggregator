@@ -1,12 +1,6 @@
 from django.db import models
 
 
-class CartMemory(models.Model):
-    login = models.CharField(max_length=30)
-    session = models.CharField(max_length=255)
-    products = models.ManyToManyField("Product", related_name="products")
-
-
 class Product(models.Model):
     class Category(models.IntegerChoices):
         Medicine = 0
@@ -17,7 +11,7 @@ class Product(models.Model):
     image_url = models.URLField(max_length=200)
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=100, decimal_places=2)
+    lowest_price = models.DecimalField(max_digits=100, decimal_places=2)
 
     def __str__(self):
         return self.name
@@ -25,19 +19,20 @@ class Product(models.Model):
 
 class Seller(models.Model):
     url = models.URLField(max_length=200, primary_key=True)
-    name = models.CharField(max_length=100)
+    image = models.URLField(max_length=200)
 
     def __str__(self):
-        return f"{self.name} at {self.url}"
+        return f"{self.url}"
 
 
 class ProductOffer(models.Model):
     product_buy_url = models.URLField(max_length=2048, primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=100, decimal_places=2)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.product} offered by {self.seller}"
+        return f"{self.product} offered by {self.seller.url}"
 
 
 class Delivery(models.Model):
