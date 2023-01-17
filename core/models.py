@@ -4,7 +4,9 @@ from django.db import models
 class CartMemory(models.Model):
     login = models.CharField(max_length=30)
     session = models.CharField(max_length=255)
-    products = models.ManyToManyField("Product", related_name="products")
+    link = models.CharField(max_length=255)
+    price = models.FloatField()
+    quantity = models.IntegerField()
 
 
 class Product(models.Model):

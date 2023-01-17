@@ -109,7 +109,9 @@ def add_product(request):
     early_product = json.loads(s.replace("'", '"'))
 
     early_product["quantity"] = int(search_word["getNumber"])
-
+    print(early_product["link"])
+    print(early_product["price"])
+    print(early_product["quantity"])
     # To save data
     product = CartMemory(
         login="testlogin",
@@ -119,7 +121,7 @@ def add_product(request):
         quantity=early_product["quantity"],
     )
 
-    product.save()
+    # product.save()
 
     # Stay on same side
     return redirect(request.META["HTTP_REFERER"])
