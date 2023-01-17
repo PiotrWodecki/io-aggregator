@@ -52,4 +52,6 @@ class MultiSearchFrom(forms.Form):
     helper.form_method = "POST"
     helper.add_input(Submit("submit", "Wyszukaj"))
 
-    file = forms.FileField(validators=[validate_multi_search_file], label="Wybierz plik")
+    file = forms.FileField(
+        validators=[validate_multi_search_file], label="Wybierz plik"
+    )
