@@ -6,7 +6,7 @@ def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
     valid_extensions = [".txt", ".csv"]
     if ext.lower() not in valid_extensions:
-        raise ValidationError("Niewspierane rozszerzenie pliku")
+        raise ValidationError("Niewspierane rozszerzenie pliku.")
 
 
 def validate_multi_search_files_row(row):
