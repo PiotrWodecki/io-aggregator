@@ -2,11 +2,14 @@ import os
 from django.core.exceptions import ValidationError
 
 
-def validate_file_extension(value):
+def validate_multi_search_file(value):
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
     valid_extensions = [".txt", ".csv"]
     if ext.lower() not in valid_extensions:
         raise ValidationError("Niewspierane rozszerzenie pliku.")
+    limit = 2 * 1024
+    if value.size > limit:
+        raise ValidationError("Plik jest za duży.")
 
 
 def validate_multi_search_files_row(row):
