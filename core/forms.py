@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Field, HTML, Submit
 from django.urls import reverse, reverse_lazy
 
-from core.validators import validate_file_extension
+from core.validators import validate_multi_search_file
 
 
 class SearchForm(forms.Form):
@@ -52,4 +52,6 @@ class MultiSearchFrom(forms.Form):
     helper.form_method = "POST"
     helper.add_input(Submit("submit", "Wyszukaj"))
 
-    file = forms.FileField(validators=[validate_file_extension], label="Wybierz plik")
+    file = forms.FileField(
+        validators=[validate_multi_search_file], label="Wybierz plik"
+    )
