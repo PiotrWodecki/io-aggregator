@@ -104,31 +104,35 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
-    s = search_word["product"]
+    if not request.session.session_key:
+        request.session.save()
 
-    early_product = json.loads(s.replace("'", '"'))
+    # Google says a session lasts two weeks by default
+    session_id = request.session.session_key
 
-    early_product["quantity"] = int(search_word["getNumber"])
-    print(early_product["link"])
-    print(early_product["price"])
-    print(early_product["quantity"])
+    cartstring = search_word["product"]
+
+    cartjson = json.loads(cartstring.replace("'", '"'))
+
+    cartjson["quantity"] = int(search_word["getNumber"])
+
     # To save data
     product = CartMemory(
-        login="testlogin",
-        session="21372",
-        link=early_product["link"],
-        price=early_product["price"],
-        quantity=early_product["quantity"],
+        userId="request.user.id",
+        session="session_id",
+        link=cartjson["link"],
+        price=cartjson["price"],
+        quantity=cartjson["quantity"],
     )
 
-    # product.save()
+    product.save()
 
     # Stay on same side
     return redirect(request.META["HTTP_REFERER"])
 
 
 # Here be function to select cart from database
-def selectCart(request):
+def selectcart(request):
     search_login = request.POST
     c = CartMemory.objects.filter(login=search_login["login"]).values()
 

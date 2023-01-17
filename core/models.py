@@ -2,7 +2,7 @@ from django.db import models
 
 
 class CartMemory(models.Model):
-    login = models.CharField(max_length=30)
+    userId = models.CharField(max_length=30)
     session = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
     price = models.FloatField()
