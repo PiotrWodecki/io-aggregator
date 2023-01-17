@@ -76,9 +76,9 @@ def multi_product(request):
                 if len(line) == 0:
                     continue
                 product_query = line[0]
-                shop_selection = line[1]
-                category = line[2]
-                quantity = line[3]
+                shop_selection = int(line[1])
+                category = line[2].strip()
+                quantity = int(line[3])
                 search_url = scraper.prepare_link(product_query, category)
                 products = scraper.get_products(search_url, shop_selection)
                 rendered.append(

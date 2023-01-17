@@ -17,7 +17,7 @@ def validate_multi_search_files_row(row):
         if int(row[1]) not in [1, 2, 3]:
             # there are three types of shopping (All, only allegro, without allegro)
             return False, "Złe ustawienia opcji sklepu."
-        if row[2] not in ["Zdrowie", "Uroda"]:
+        if row[2].strip() not in ["Zdrowie", "Uroda"]:
             # there are two types of category
             return False, "Złe ustawienia kategorii."
         if int(row[3]) <= 0 or int(row[3]) > 10:
