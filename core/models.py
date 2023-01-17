@@ -1,15 +1,23 @@
 from django.db import models
 
 
+class CartMemory(models.Model):
+    login = models.CharField(max_length=30)
+    session = models.CharField(max_length=255)
+    products = models.ManyToManyField("Product", related_name="products")
+
+
 class Product(models.Model):
     class Category(models.IntegerChoices):
         Medicine = 0
         Cosmetics = 1
 
-    url = models.URLField(max_length=200, primary_key=True)
+    url = models.URLField(max_length=2048, primary_key=True)
+    shop_url = models.URLField(max_length=200)
+    image_url = models.URLField(max_length=200)
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    category = models.CharField(max_length=20, choices=Category.choices)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=100, decimal_places=2)
 
     def __str__(self):
         return self.name
@@ -24,7 +32,7 @@ class Seller(models.Model):
 
 
 class ProductOffer(models.Model):
-    product_buy_url = models.URLField(max_length=200, primary_key=True)
+    product_buy_url = models.URLField(max_length=2048, primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
@@ -34,7 +42,7 @@ class ProductOffer(models.Model):
 
 class Delivery(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=100, decimal_places=2)
     product_offer = models.ForeignKey(ProductOffer, on_delete=models.CASCADE)
 
     def __str__(self):
