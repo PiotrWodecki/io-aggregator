@@ -31,8 +31,8 @@
         <div class="col">
             <ul class="navbar-nav justify-content-end me-auto mb-2 mb-SessionMiddleware lg-0 mt-2">
                 <li class="nav-item">
-                    <a type="submit" href="google.com" class="btn btn-sm" >
-                        <img src="/core/static/263142.png" style="float:left;width:42px;height:42px;">
+                    <a href="{% url 'shopping_cart' %}" class="btn btn-xs" >
+                        <img src="{% static 'shopping-cart.svg' %}" alt="shopping cart" style="float:left;width:24px;height:24px;">
                     </a>
                 </li>
                 {% if user.is_authenticated %}
