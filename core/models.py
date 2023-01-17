@@ -39,11 +39,3 @@ class Delivery(models.Model):
 
     def __str__(self):
         return f"{self.name} for {self.price}"
-
-
-class CartMemory(models.Model):
-    login = models.CharField(max_length=30)
-    link = models.CharField(max_length=255)
-    thumbnail = models.URLField(max_length=200)
-    price = models.FloatField()
-    quantity = models.IntegerField()
