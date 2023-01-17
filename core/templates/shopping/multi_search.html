@@ -11,19 +11,36 @@
     </p>
     <div class="collapse" id="collapseExample">
         <div class="card card-body">
-            <p>Aby wyszukać kilka produktów jednocześnie, należy przesłać plik w formacie csv lub txt. Struktura takiego
-                pliku
-                powinna być następująca:</p>
-            <p><code>nazwa produktu,filtr sklepu,kateogoria,liczba zakupowanego produktu</code></p>
-            <p>Dokładny opis parametrów:<br>
+            <p>Aby wyszukać kilka produktów jednocześnie, należy przesłać plik w formacie txt.<br>
+                Struktura każdej linii w pliku powinna wyglądać następująco:
+            <p><code>nazwa produktu,filtr sklepu,nazwa kategorii,liczba produktów<br>
+                </code></p>
+            <p>Opis parametrów:</p>
             <ul>
-                <li>nazwa produktu - dowolny tekst</li>
-                <li>filtr sklepu: 1 - wszyskie sklepy, 2 - tylko Allegro, 3 - tylko Ceneo</li>
-                <li>kategoria: Zdrowie lub Uroda</li>
-                <li>liczba zakupowanego produktu: liczba całkowita w przedziale od 1 do 10</li>
+                <li>nazwa produktu:</li>
+                    <ul>
+                        <li>dowolny tekst</li>
+                    </ul>
+                <li>filtr sklepu:</li>
+                    <ul>
+                        <li>1 - wszystkie sklepy</li>
+                        <li>2 - tylko Allegro</li>
+                        <li>3 - tylko Ceneo</li>
+                    </ul>
+                <li>kategoria:</li>
+                    <ul>
+                        <li>Zdrowie</li>
+                        <li>Uroda</li>
+                    </ul>
+                <li>liczba produktów:</li>
+                    <ul>
+                        <li> liczba naturalna od 1 do 10</li>
+                    </ul>
             </ul>
-            </p>
-            <p>Plik nie może posiadać nagłówka. Dozwolone są puste linie, a maksymalna liczba produktów pliku wynosi 10.</p>
+            <p>Przykład:<br>
+                <code>Aspiryna,1,Zdrowie,7</code></p>
+            <p class="mb-0">Plik nie może posiadać nagłówka, dozwolone są puste linie.<br>
+                Maksymalna liczba produktów w pliku wynosi 10.</p>
         </div>
     </div>
 
