@@ -14,7 +14,7 @@ def validate_multi_search_files_row(row):
         if len(str(row[0])) > 32:
             # name of product can not be longer than 32
             return False, "Produkt ma zbyt długą nazwę."
-        if row[1] not in ["1", "2", "3"]:
+        if int(row[1]) not in [1, 2, 3]:
             # there are three types of shopping (All, only allegro, without allegro)
             return False, "Złe ustawienia opcji sklepu."
         if row[2] not in ["Zdrowie", "Uroda"]:
