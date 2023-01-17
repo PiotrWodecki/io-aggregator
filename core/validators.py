@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 def validate_multi_search_file(value):
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
-    valid_extensions = [".txt", ".csv"]
+    valid_extensions = [".txt"]
     if ext.lower() not in valid_extensions:
         raise ValidationError("Niewspierane rozszerzenie pliku.")
     limit = 2 * 1024

@@ -1,8 +1,10 @@
 import csv
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib import messages
-from io import StringIO
+from io import StringIO, BytesIO
 
 from ceneoscraper import bs4_scraper as scraper
 from .forms import SearchForm
