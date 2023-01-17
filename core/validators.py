@@ -9,7 +9,7 @@ def validate_multi_search_file(value):
         raise ValidationError("Niewspierane rozszerzenie pliku.")
     limit = 2 * 1024
     if value.size > limit:
-        raise ValidationError("Plik jest za duży.")
+        raise ValidationError("Maksymalny rozmiar pliku to 2KB")
 
 
 def validate_multi_search_files_row(row):
