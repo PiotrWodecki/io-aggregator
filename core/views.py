@@ -1,19 +1,20 @@
 import csv
 import json
-from django.contrib.auth.decorators import login_required
-
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render
-from django.contrib import messages
 from io import StringIO
 
-from ceneoscraper import bs4_scraper as scraper
-from .forms import SearchForm
-from .forms import MultiSearchFrom
-from core.validators import validate_multi_search_files_row
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
 
-from .models import CartMemory
+from ceneoscraper import bs4_scraper as scraper
+from core.validators import validate_multi_search_files_row
+from .forms import MultiSearchFrom
+from .forms import SearchForm
+from .models import User
+from .models import Product
+from .models import Cart
 
 
 def search(request):
@@ -104,33 +105,62 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
-    s = search_word["product"]
+    if not request.session.session_key:
+        request.session.save()
 
-    early_product = json.loads(s.replace("'", '"'))
+    # Google says a session lasts two weeks by default
+    session_id = request.session.session_key
 
-    early_product["quantity"] = int(search_word["getNumber"])
-    print(early_product["link"])
-    print(early_product["price"])
-    print(early_product["quantity"])
+    cartstring = search_word["product"]
+
+    cartjson = json.loads(cartstring.replace("'", '"'))
+
+    cartjson["quantity"] = int(search_word["getNumber"])
+
     # To save data
-    product = CartMemory(
-        login="testlogin",
-        session="21372",
-        link=early_product["link"],
-        price=early_product["price"],
-        quantity=early_product["quantity"],
+    product = Product(
+        cart=Cart.objects.filter(session=session_id)[0],
+        url=cartjson["link"],
+        image_url=cartjson["image"],
+        name=cartjson["name"],
+        price=cartjson["price"],
+        quantity=cartjson["quantity"],
     )
 
-    # product.save()
+    # Check if user is logged in
+    if request.user.is_authenticated:
+        user = User(request.user)
+        # Move this to where registration is
+        # So the cart is created at signing-up
+        cart = Cart(user=user)
 
-    # Stay on same side
+    # Hard to test, probably need refactoring
+    # Chack if cart with X session exist
+    elif Cart.objects.filter(session=session_id)[0] != None:
+        print("Here")
+        cart = Cart.objects.filter(session=session_id)[0]
+
+    # Save new cart otherwise
+    else:
+        cart = Cart(
+            session=session_id,
+        )
+        cart.save()
+
+    # Save selected product to DB
+    product.save()
+
+    # Example query
+    print(Product.objects.filter(cart=cart).values())
+
+    # Stay on same site
     return redirect(request.META["HTTP_REFERER"])
 
 
 # Here be function to select cart from database
-def selectCart(request):
+def selectcart(request):
     search_login = request.POST
-    c = CartMemory.objects.filter(login=search_login["login"]).values()
+    # c = CartMemory.objects.filter(login=search_login["login"]).values()
 
     # I forgor what to return 💀
     return redirect(request.META["HTTP_REFERER"])
