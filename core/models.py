@@ -1,19 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-
-class CartMemory(models.Model):
-    userId = models.CharField(max_length=30)
-    session = models.CharField(max_length=255)
-    link = models.CharField(max_length=255)
-    price = models.FloatField()
-    quantity = models.IntegerField()
-
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
+    session = models.CharField(max_length=255, default='')
 
 class Product(models.Model):
     class Category(models.IntegerChoices):
         Medicine = 0
         Cosmetics = 1
 
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048, primary_key=True)
     shop_url = models.URLField(max_length=200)
     image_url = models.URLField(max_length=200)
@@ -23,7 +20,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Seller(models.Model):
     url = models.URLField(max_length=200, primary_key=True)
