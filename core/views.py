@@ -16,6 +16,7 @@ from .models import User
 from .models import Product
 from .models import Cart
 
+
 def search(request):
     form = SearchForm()
     return render(request, "shopping/search.html", {"form": form})
@@ -127,30 +128,29 @@ def add_product(request):
     )
 
     # Check if user is logged in
-    if(request.user.is_authenticated):
-        user=User(request.user)
+    if request.user.is_authenticated:
+        user = User(request.user)
         # Move this to where registration is
         # So the cart is created at signing-up
-        cart=Cart(
-            user=user
-        )
+        cart = Cart(user=user)
 
-    #Hard to test, probably need refactoring
+    # Hard to test, probably need refactoring
     # Chack if cart with X session exist
-    elif(Cart.objects.filter(session=session_id)[0] != None):
+    elif Cart.objects.filter(session=session_id)[0] != None:
         print("Here")
-        cart=Cart.objects.filter(session=session_id)[0]
+        cart = Cart.objects.filter(session=session_id)[0]
 
     # Save new cart otherwise
     else:
-        cart=Cart(
+        cart = Cart(
             session=session_id,
         )
         cart.save()
 
-
+    # Save selected product to DB
     product.save()
 
+    # Example query
     print(Product.objects.filter(cart=cart).values())
 
     # Stay on same site
@@ -160,7 +160,7 @@ def add_product(request):
 # Here be function to select cart from database
 def selectcart(request):
     search_login = request.POST
-    #c = CartMemory.objects.filter(login=search_login["login"]).values()
+    # c = CartMemory.objects.filter(login=search_login["login"]).values()
 
     # I forgor what to return 💀
     return redirect(request.META["HTTP_REFERER"])
