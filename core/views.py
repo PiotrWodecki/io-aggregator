@@ -4,6 +4,7 @@ from io import StringIO
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -117,46 +118,48 @@ def add_product(request):
 
     cartjson["quantity"] = int(search_word["getNumber"])
 
-    # Check if user is logged in
-    if request.user.is_authenticated:
-        user = User(request.user)
-        # Move this to where registration is
-        # So the cart is created at signing-up
-        cart = Cart(user=user)
+    if cartjson["quantity"] > 0:
 
-    # Hard to test, probably need refactoring
-    # Chack if cart with X session exist
-    elif len(Cart.objects.filter(session=session_id)) != 0:
-        print("Here")
-        cart = Cart.objects.filter(session=session_id)[0]
+        # Check if user is logged in
+        if request.user.is_authenticated:
+            user = User(request.user)
+            # Move this to where registration is
+            # So the cart is created at signing-up
+            cart = Cart(user=user)
 
-    # Save new cart otherwise
-    else:
-        cart = Cart(
-            session=session_id,
+        # Hard to test, probably need refactoring
+        # Chack if cart with X session exist
+        elif len(Cart.objects.filter(session=session_id)) != 0:
+            print("Here")
+            cart = Cart.objects.filter(session=session_id)[0]
+
+        # Save new cart otherwise
+        else:
+            cart = Cart(
+                session=session_id,
+            )
+            cart.save()
+
+        # To save data
+        product = Product(
+            cart=Cart.objects.filter(session=session_id)[0],
+            url=cartjson["link"],
+            image_url=cartjson["image"],
+            name=cartjson["name"],
+            price=cartjson["price"],
+            quantity=cartjson["quantity"],
         )
-        cart.save()
 
+        # Save selected product to DB
+        product.save()
 
-    # To save data
-    product = Product(
-        cart=Cart.objects.filter(session=session_id)[0],
-        url=cartjson["link"],
-        image_url=cartjson["image"],
-        name=cartjson["name"],
-        price=cartjson["price"],
-        quantity=cartjson["quantity"],
-    )
+        # Example of query
+        print(Product.objects.filter(cart=cart).values())
 
-
-    # Save selected product to DB
-    product.save()
-
-    # Example of query
-    print(Product.objects.filter(cart=cart).values())
-
-    # Stay on same site
-    return redirect(request.META["HTTP_REFERER"])
+        # Stay on same site
+        return redirect(request.META["HTTP_REFERER"])
+    else:
+        return HttpResponse(status=500)
 
 
 # Here be function to select cart from database
