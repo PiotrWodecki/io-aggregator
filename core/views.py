@@ -1,9 +1,6 @@
 import csv
-import json
-from io import StringIO
 import ast
 
-from django.contrib import messages
 from decimal import Decimal
 from typing import List
 
@@ -21,8 +18,6 @@ from .aggregators import (
     fill_product_offers,
     group_offers_deliveries_prices_by_shop,
 )
-from .forms import SearchForm
-from .forms import MultiSearchFrom
 from core.validators import validate_multi_search_files_row
 from .models import Product, ProductOffer, Delivery
 from .forms import MultiSearchFrom, SearchForm
