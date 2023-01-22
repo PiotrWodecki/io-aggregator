@@ -158,12 +158,3 @@ def add_product(request):
         return redirect(request.META["HTTP_REFERER"])
     else:
         return HttpResponse(status=500)
-
-
-# Here be function to select cart from database
-def selectcart(request):
-    search_login = request.POST
-    # c = CartMemory.objects.filter(login=search_login["login"]).values()
-
-    # I forgor what to return 💀
-    return redirect(request.META["HTTP_REFERER"])
