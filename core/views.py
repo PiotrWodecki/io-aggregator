@@ -4,14 +4,27 @@ from io import StringIO
 import ast
 
 from django.contrib import messages
+from decimal import Decimal
+from typing import List
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.contrib import messages
+from io import StringIO, BytesIO
 from django.views.decorators.csrf import csrf_protect
 
 from ceneoscraper import bs4_scraper as scraper
+from .aggregators import (
+    aggregate_products_minimize_shops,
+    fill_product_offers,
+    group_offers_deliveries_prices_by_shop,
+)
+from .forms import SearchForm
+from .forms import MultiSearchFrom
 from core.validators import validate_multi_search_files_row
+from .models import Product, ProductOffer, Delivery
 from .forms import MultiSearchFrom, SearchForm
 from .models import User, Product, Cart
 
@@ -32,7 +45,9 @@ def select_product(request):
         # to combat this we will capture all exceptions
         # and display a simple message to the user
         try:
-            products = scraper.get_products(search_url)
+            products = []
+            if int(shop_selection) in [1, 2, 3]:
+                products = scraper.get_products(search_url, int(shop_selection))
         except (Exception,):
             messages.error(request, "Wystąpił błąd podczas wyszukiwania produktu")
             return render(request, "shopping/search.html", {"form": form})
@@ -60,23 +75,31 @@ def multi_product(request):
             rendered = []
             csvfile = file.read().decode("utf-8")
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
-            if spam_ereader.line_num > 10:
+
+            if len(list(spam_ereader)) > 10:
                 messages.error(request, "Lista zakupów jest zbyt długa")
                 form = MultiSearchFrom()
                 return render(request, "shopping/search.html", {"form": form})
+
             for line in spam_ereader:
                 if len(line) == 0:
                     continue
-                if not validate_multi_search_files_row(line):
-                    messages.error(request, "Błąd w liście zakupów")
+                validator = validate_multi_search_files_row(line)
+                if not validator[0]:
+                    messages.error(request, str(validator[1]))
                     form = MultiSearchFrom()
                     return render(request, "shopping/multi_search.html", {"form": form})
+
+            spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
+            for line in spam_ereader:
+                if len(line) == 0:
+                    continue
                 product_query = line[0]
-                shop_selection = line[1]
-                category = line[2]
-                quantity = line[3]
+                shop_selection = int(line[1])
+                category = line[2].strip()
+                quantity = int(line[3])
                 search_url = scraper.prepare_link(product_query, category)
-                products = scraper.get_products(search_url)
+                products = scraper.get_products(search_url, shop_selection)
                 rendered.append(
                     {
                         "id": count,
@@ -94,6 +117,30 @@ def multi_product(request):
     else:
         form = MultiSearchFrom()
     return render(request, "shopping/multi_search.html", {"form": form})
+
+
+def aggregate_cart(request):
+    products = Product.objects.all()
+    fill_product_offers(products)
+
+    aggregated_offers: List[ProductOffer]
+    aggregated_deliveries: List[Delivery]
+    total_prices: List[Decimal]
+
+    (
+        aggregated_offers,
+        aggregated_deliveries,
+        total_prices,
+    ) = aggregate_products_minimize_shops(products)
+    grouped_offers_deliveries_prices = group_offers_deliveries_prices_by_shop(
+        aggregated_offers, aggregated_deliveries, total_prices
+    )
+
+    return render(
+        request,
+        "shopping/aggregate_cart.html",
+        {"grouped_offers_deliveries_prices": grouped_offers_deliveries_prices},
+    )
 
 
 @login_required
