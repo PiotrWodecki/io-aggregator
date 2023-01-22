@@ -30,4 +30,5 @@ urlpatterns = [
     path("history/", core.views.shopping_history, name="shopping_history"),
     path("aggregate/", core.views.aggregate_cart, name="aggregate_cart"),
     path("search/add_product/", core.views.add_product, name="add_product"),
+    path("shopping-cart/", core.views.shopping_cart, name="shopping_cart"),
 ]

@@ -143,6 +143,7 @@ def shopping_history(request):
     return render(request, "shopping/shopping_history.html")
 
 
+
 @csrf_protect
 def add_product(request):
     search_word = request.POST
@@ -200,3 +201,7 @@ def add_product(request):
         return redirect(request.META["HTTP_REFERER"])
     else:
         return HttpResponse(status=500)
+
+def shopping_cart(request):
+    return render(request, "shopping/shopping_cart.html")
+
