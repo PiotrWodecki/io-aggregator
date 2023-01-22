@@ -15,6 +15,7 @@ from .forms import SearchForm
 from .models import User
 from .models import Product
 from .models import Cart
+import ast
 
 
 def search(request):
@@ -113,19 +114,9 @@ def add_product(request):
 
     cartstring = search_word["product"]
 
-    cartjson = json.loads(cartstring.replace("'", '"'))
+    cartjson = ast.literal_eval(cartstring)
 
     cartjson["quantity"] = int(search_word["getNumber"])
-
-    # To save data
-    product = Product(
-        cart=Cart.objects.filter(session=session_id)[0],
-        url=cartjson["link"],
-        image_url=cartjson["image"],
-        name=cartjson["name"],
-        price=cartjson["price"],
-        quantity=cartjson["quantity"],
-    )
 
     # Check if user is logged in
     if request.user.is_authenticated:
@@ -136,7 +127,7 @@ def add_product(request):
 
     # Hard to test, probably need refactoring
     # Chack if cart with X session exist
-    elif Cart.objects.filter(session=session_id)[0] != None:
+    elif len(Cart.objects.filter(session=session_id)) != 0:
         print("Here")
         cart = Cart.objects.filter(session=session_id)[0]
 
@@ -146,6 +137,16 @@ def add_product(request):
             session=session_id,
         )
         cart.save()
+
+    # To save data
+    product = Product(
+        cart=Cart.objects.filter(session=session_id)[0],
+        url=cartjson["link"],
+        image_url=cartjson["image"],
+        name=cartjson["name"],
+        price=cartjson["price"],
+        quantity=cartjson["quantity"],
+    )
 
     # Save selected product to DB
     product.save()
