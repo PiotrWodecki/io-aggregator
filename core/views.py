@@ -16,7 +16,6 @@ from .forms import MultiSearchFrom, SearchForm
 from .models import User, Product, Cart
 
 
-
 def search(request):
     form = SearchForm()
     return render(request, "shopping/search.html", {"form": form})
