@@ -12,7 +12,10 @@ def fill_product_offers(products: List[Product]) -> None:
     for product in products:
         if "https://ceneo.pl//Click/Offer/?e" in product.url:
             continue
-        offers = get_offers(product.url)
+        try:
+            offers = get_offers(product.url)
+        except (Exception,):
+            continue
         for offer in offers:
             seller, created = Seller.objects.get_or_create(
                 url=offer["shop_url"], image=offer["shop_image"]
@@ -84,9 +87,7 @@ def aggregate_products_minimize_shops(
                         product=offer.product,
                     )
                 )
-                total_prices.append(
-                    offer.price * offer.product.quantity + lowest_price_delivery.price
-                )
+                total_prices.append(offer.price * offer.product.quantity)
     for product in products:
         if (
             product.shop_url != ""
@@ -123,7 +124,3 @@ def group_offers_deliveries_prices_by_shop(
             grouped_offers[offer.seller][2].append(price)
 
     return {seller: tuple(zip(*offers)) for seller, offers in grouped_offers.items()}
-
-
-def aggregate_products_minimize_price(products: List[Product]) -> None:
-    pass

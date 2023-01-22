@@ -14,11 +14,6 @@
                         </div>
                         <div class="col">
                             <p>Cena: {{ offer.price }}</p>
-                            {% if offer.product.shop_url|length > 0 %}
-                                <p>Sprzedawca: {{ offer.product.shop_url }}</p>
-                            {% else %}
-                                <p>Sprzedawca: {{ offer.seller }}</p>
-                            {% endif %}
                             <p class="mt-2">Ilość: {{ offer.product.quantity }}</p>
                             <p class="mt-2">Cena całkowita: {{ total_price }}</p>
                             <a href="{{ offer.product_buy_url }}" target="_blank" class="btn btn-primary">Kup teraz!</a>
