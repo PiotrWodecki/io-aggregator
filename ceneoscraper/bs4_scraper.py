@@ -6,6 +6,17 @@ import json
 import html
 import re
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "pl,en-US,en;q=0.3",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "DNT": "1",
+    "TE": "trailers",
+}
+
 
 def prepare_link(name, category):
     """
@@ -50,7 +61,7 @@ def get_products(link_to_main_page, option):
     # Disallow redirects which can occur in two cases:
     # 1. when only a single product is found
     # 2. when the search result is empty the category is removed
-    request = requests.get(link_to_main_page, allow_redirects=False)
+    request = requests.get(link_to_main_page, allow_redirects=False, headers=headers)
 
     # category is present between the "/" and ";" characters
     # if they are present together, it means that the category
@@ -183,7 +194,7 @@ def get_offers(website_link):
     name, cost and payment method.
     """
 
-    content = requests.get(website_link).text
+    content = requests.get(website_link, headers=headers).text
     soup = BeautifulSoup(content, "lxml")
     offers_proposed_by_ceneo = soup.find_all(
         "ul", class_="product-offers__list js_product-offers"
@@ -199,7 +210,7 @@ def get_offers(website_link):
             hidden_offers_link += str(
                 json.loads('{"s":"' + matching_text.group(1) + '"}')["s"]
             )
-            content = requests.get(hidden_offers_link).text
+            content = requests.get(hidden_offers_link, headers=headers).text
             soup = BeautifulSoup(str(str(offers_proposed_by_ceneo) + content), "lxml")
 
     offers = soup.find_all(
@@ -249,8 +260,7 @@ def get_offers(website_link):
             delivery_data_link = (
                 "https://www.ceneo.pl/Product/GetOfferDetails?data=" + html_frag
             )
-
-        json_data = requests.get(delivery_data_link).text
+        json_data = requests.get(delivery_data_link, headers=headers).text
         parsed = json.loads(json_data)
         deliver_html = html.unescape(parsed["ProductDetailsAdditionalPartial"])
         delivery_soup = BeautifulSoup(deliver_html, "lxml")
@@ -300,6 +310,7 @@ def get_offers(website_link):
             }
         )
         counter += 1
+    time.sleep(6)
 
     return offer_list
 
@@ -307,8 +318,8 @@ def get_offers(website_link):
 if __name__ == "__main__":
     start_time = time.time()
     categories = ["", "Zdrowie", "Uroda"]
-    entered_string = "grdqw"
-    ready_link = prepare_link(entered_string, "Motoryzacja")
+    entered_string = "ibuprofen"
+    ready_link = prepare_link(entered_string, "Zdrowie")
     print(ready_link)
     propos = get_products(ready_link, 1)
     for prop in propos:
@@ -316,10 +327,10 @@ if __name__ == "__main__":
 
     print("Enter id:")
     idd = 0
-    # proposition_link = propos[int(idd)].get("link")
-    # list_of_products = get_offers("https://www.ceneo.pl/53545456")
-    # for element in list_of_products:
-    #    print(element)
+    proposition_link = propos[int(idd)].get("link")
+    list_of_products = get_offers("https://www.ceneo.pl/53545456")
+    for element in list_of_products:
+        print(element)
 
     print("Program execution:")
     print("--- %s seconds ---" % (time.time() - start_time))

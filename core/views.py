@@ -1,5 +1,6 @@
 import csv
-import os
+from decimal import Decimal
+from typing import List
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -7,9 +8,15 @@ from django.contrib import messages
 from io import StringIO, BytesIO
 
 from ceneoscraper import bs4_scraper as scraper
+from .aggregators import (
+    aggregate_products_minimize_shops,
+    fill_product_offers,
+    group_offers_deliveries_prices_by_shop,
+)
 from .forms import SearchForm
 from .forms import MultiSearchFrom
 from core.validators import validate_multi_search_files_row
+from .models import Product, ProductOffer, Delivery
 
 
 def search(request):
@@ -100,6 +107,30 @@ def multi_product(request):
     else:
         form = MultiSearchFrom()
     return render(request, "shopping/multi_search.html", {"form": form})
+
+
+def aggregate_cart(request):
+    products = Product.objects.all()
+    fill_product_offers(products)
+
+    aggregated_offers: List[ProductOffer]
+    aggregated_deliveries: List[Delivery]
+    total_prices: List[Decimal]
+
+    (
+        aggregated_offers,
+        aggregated_deliveries,
+        total_prices,
+    ) = aggregate_products_minimize_shops(products)
+    grouped_offers_deliveries_prices = group_offers_deliveries_prices_by_shop(
+        aggregated_offers, aggregated_deliveries, total_prices
+    )
+
+    return render(
+        request,
+        "shopping/aggregate_cart.html",
+        {"grouped_offers_deliveries_prices": grouped_offers_deliveries_prices},
+    )
 
 
 @login_required
