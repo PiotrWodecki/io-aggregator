@@ -136,3 +136,7 @@ def aggregate_cart(request):
 @login_required
 def shopping_history(request):
     return render(request, "shopping/shopping_history.html")
+
+
+def shopping_cart(request):
+    return render(request, "shopping/shopping_cart.html")
