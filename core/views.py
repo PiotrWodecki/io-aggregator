@@ -1,6 +1,7 @@
 import csv
 import json
 from io import StringIO
+import ast
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -114,7 +115,7 @@ def add_product(request):
 
     cartstring = search_word["product"]
 
-    cartjson = json.loads(cartstring.replace("'", '"'))
+    cartjson = ast.literal_eval(cartstring)
 
     cartjson["quantity"] = int(search_word["getNumber"])
 
