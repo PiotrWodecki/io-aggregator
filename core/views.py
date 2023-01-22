@@ -152,7 +152,7 @@ def add_product(request):
     # Save selected product to DB
     product.save()
 
-    # Example query
+    # Example of query
     print(Product.objects.filter(cart=cart).values())
 
     # Stay on same site
