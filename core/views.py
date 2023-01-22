@@ -12,11 +12,9 @@ from django.views.decorators.csrf import csrf_protect
 
 from ceneoscraper import bs4_scraper as scraper
 from core.validators import validate_multi_search_files_row
-from .forms import MultiSearchFrom
-from .forms import SearchForm
-from .models import User
-from .models import Product
-from .models import Cart
+from .forms import MultiSearchFrom, SearchForm
+from .models import User, Product, Cart
+
 
 
 def search(request):
