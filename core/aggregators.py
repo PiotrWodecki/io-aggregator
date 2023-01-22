@@ -12,7 +12,6 @@ def fill_product_offers(products: List[Product]) -> None:
     for product in products:
         if "https://ceneo.pl//Click/Offer/?e" in product.url:
             continue
-        offers = []
         offers = get_offers(product.url)
         for offer in offers:
             seller, created = Seller.objects.get_or_create(
