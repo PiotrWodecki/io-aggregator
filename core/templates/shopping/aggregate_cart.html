@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Optymalizacja zakupów{% endblock %}
+{% block content %}
+    {% for seller, offers_deliveries_prices in grouped_offers_deliveries_prices.items %}
+        <h2>{{ seller }}</h2>
+        <div class="list-group mb-3">
+            {% for offer, delivery, total_price in offers_deliveries_prices %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{ offer.product.name }}</h5>
+                            <img src="{{ offer.product.image_url }}" alt="{{ offer.product.name }}"
+                                 class="rounded img-thumbnail"/>
+                        </div>
+                        <div class="col">
+                            <p>Cena: {{ offer.price }}</p>
+                            <p class="mt-2">Ilość: {{ offer.product.quantity }}</p>
+                            <p class="mt-2">Cena całkowita: {{ total_price }}</p>
+                            <a href="{{ offer.product_buy_url }}" target="_blank" class="btn btn-primary">Kup teraz!</a>
+
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.last %}
+                    <div class="list-group-item">
+                        <div class="row-md-4">
+                            <p>Dostawa: {{ delivery.name }}</p>
+                            <p>Koszt dostawy: {{ delivery.price }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
