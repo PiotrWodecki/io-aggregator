@@ -10,8 +10,8 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg py-2 navbar-light bg-light border-bottom">
-    <div class="container d-flex flex-wrap">
+<nav class="navbar navbar-expand-xl py-2 navbar-light bg-light border-bottom">
+    <div class="container d-flex">
         <a class="navbar-brand fs-3" href="{% url 'search' %}">InternetoweOkazje</a>
         <button class="navbar-toggler " type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -22,13 +22,13 @@
             <div class="col">
                 <ul class="navbar-nav mt-2 mb-2 me-auto justify-content-start">
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active fs-4" aria-current="page" href="{% url 'search' %}">Szukaj</a>
+                        <a class="nav-link active fs-4 text-nowrap" aria-current="page" href="{% url 'search' %}">Szukaj</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active fs-4" aria-current="page" href="{% url 'multi_product' %}">Wyszukaj plikiem</a>
+                        <a class="nav-link active fs-4 text-nowrap" aria-current="page" href="{% url 'multi_product' %}">Wyszukaj plikiem</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active fs-4" aria-current="page" href="{% url 'aggregate_cart' %}">Optymalizuj zakupy</a>
+                        <a class="nav-link active fs-4 text-nowrap" aria-current="page" href="{% url 'aggregate_cart' %}">Optymalizuj zakupy</a>
                     </li>
                 </ul>
             </div>
