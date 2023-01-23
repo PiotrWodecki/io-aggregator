@@ -1,4 +1,21 @@
 {% extends 'base.html' %}
 {% block title %}Koszyk{% endblock %}
 {% block content %}
+    {% for product, total_price in content %}
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col">
+                    <h5>{{ product.name }}</h5>
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                         class="rounded img-thumbnail"/>
+                </div>
+                <div class="col">
+                    <p>Cena: {{ product.price }}</p>
+                    <p class="mt-2">Ilość: {{ product.quantity }}</p>
+                    <p class="mt-2">Cena całkowita: {{ total_price }}</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{% url 'aggregate_cart' %}" class="btn btn-primary btn-block fs-1">Optymalizuj</a>
 {% endblock %}

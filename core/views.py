@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import List
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.contrib import messages
@@ -66,19 +66,19 @@ def multi_product(request):
         form = MultiSearchFrom(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["file"]
-            count = 0
             rendered = []
             csvfile = file.read().decode("utf-8")
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
 
-            if len(list(spam_ereader)) > 10:
-                messages.error(request, "Lista zakupów jest zbyt długa")
-                form = MultiSearchFrom()
-                return render(request, "shopping/search.html", {"form": form})
-
+            counter = 0
             for line in spam_ereader:
                 if len(line) == 0:
                     continue
+                counter += 1
+                if counter > 10:
+                    messages.error(request, "Lista zakupów jest zbyt długa")
+                    form = MultiSearchFrom()
+                    return render(request, "shopping/search.html", {"form": form})
                 validator = validate_multi_search_files_row(line)
                 if not validator[0]:
                     messages.error(request, str(validator[1]))
@@ -86,6 +86,7 @@ def multi_product(request):
                     return render(request, "shopping/multi_search.html", {"form": form})
 
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
+            count = 0
             for line in spam_ereader:
                 if len(line) == 0:
                     continue
@@ -104,6 +105,7 @@ def multi_product(request):
                     },
                 )
                 count += 1
+            request.session['multi-search-rendered'] = str(rendered)
             return render(
                 request,
                 "shopping/multi_search.html",
@@ -148,59 +150,66 @@ def add_product(request):
     search_word = request.POST
     if not request.session.session_key:
         request.session.save()
-
     # Google says a session lasts two weeks by default
     session_id = request.session.session_key
-
     cartstring = search_word["product"]
-
     cartjson = ast.literal_eval(cartstring)
-
     cartjson["quantity"] = int(search_word["getNumber"])
 
-    if cartjson["quantity"] > 0:
-
+    if not 0 < cartjson["quantity"] <= 10:
+        messages.error(request, "Błędna ilość produktu.")
+        return redirect(request.META["HTTP_REFERER"], messages)
+    else:
         # Check if user is logged in
         if request.user.is_authenticated:
             user = User(request.user)
             # Move this to where registration is
             # So the cart is created at signing-up
-            cart = Cart(user=user)
-
+            cart = Cart(user=user.id)
         # Hard to test, probably need refactoring
         # Chack if cart with X session exist
         elif len(Cart.objects.filter(session=session_id)) != 0:
-            print("Here")
             cart = Cart.objects.filter(session=session_id)[0]
-
         # Save new cart otherwise
         else:
-            cart = Cart(
-                session=session_id,
-            )
-            cart.save()
-
+            cart = Cart(session=session_id)
         # To save data
         product = Product(
-            cart=Cart.objects.filter(session=session_id)[0],
+            cart=cart,
             url=cartjson["link"],
             image_url=cartjson["image"],
             name=cartjson["name"],
             price=cartjson["price"],
             quantity=cartjson["quantity"],
         )
-
         # Save selected product to DB
+        cart.save()
         product.save()
-
-        # Example of query
-        print(Product.objects.filter(cart=cart).values())
-
         # Stay on same site
-        return redirect(request.META["HTTP_REFERER"])
-    else:
-        return HttpResponse(status=500)
+        if request.get_full_path() == "search/add_product/":
+            return redirect(request.META["HTTP_REFERER"])
+        elif request.get_full_path() == "multi-search/add_product/":
+            context = request.session.get('multi-search-rendered')
+            rendered = ast.literal_eval(context)
+            form = MultiSearchFrom()
+            return render(
+                request,
+                "shopping/multi_search.html",
+                {"rendered": rendered, "form": form},
+            )
+        else:
+            messages.error(request, "Błędna ilość produktu.")
+            return redirect(request.META["HTTP_REFERER"], messages)
 
 
+@csrf_protect
 def shopping_cart(request):
-    return render(request, "shopping/shopping_cart.html")
+    session_id = request.session.session_key
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=session_id)
+    products = Product.objects.filter(cart_id__in=cart)
+    total_prices = [product.price * product.quantity for product in products]
+    content = zip(products, total_prices)
+    return render(request, "shopping/shopping_cart.html", {"content": content})

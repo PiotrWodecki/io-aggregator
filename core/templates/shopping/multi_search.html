@@ -62,23 +62,53 @@
                     <div class="accordion-body">
                         <div class="col container mt-5" style="display: inline-block; vertical-align: top">
                             <div class="row">
+                                {% with forloop.counter as search_no %}
                                 {% for product in render.products %}
-                                    <div class="col-md-4 mb-5">
+                                    <div class="col-md-4 mb-4">
                                         <div class="card h-100">
-                                            <img src="{{ product.image }}" class="card-img-top"
-                                                 alt="{{ product.name }}">
+                                            <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
                                             <div class="card-body">
                                                 <h6 class="card-title">{{ product.name }}</h6>
                                             </div>
                                             <div class="card-footer">
-                                                <a href="{{ product.link }}" class="btn btn-primary btn-block">Dodaj</a>
-                                                <span class="mt-2" style="float:right;">
-                                                    Cena: {{ product.price|floatformat:2 }}zł
-                                            </span>
+                                                <div class="d-flex flex-wrap mt-2">
+                                                    <div class="d-flex me-2 mb-1">
+                                                        <form action="add_product/" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="product" id="{{ search_no }}{{ forloop.counter }}" value="{{ product }}" />
+                                                            <input type="hidden" name="getNumber" value="0" id="amount{{ search_no }}{{ forloop.counter }}"/>
+                                                            <input type="submit" value="Dodaj"
+                                                               class="btn btn-primary btn-block"
+                                                               product="{{ product }}"
+                                                               onclick="getValue({{ search_no }}{{ forloop.counter }})"/>
+                                                        </form>
+                                                    </div>
+                                                    <div class="d-flex flex-row">
+                                                        <div class="amount-button"
+                                                             id="decrease"
+                                                             onclick="decreaseValue({{ search_no }}{{ forloop.counter }})"
+                                                             value="Decrease Value">-
+                                                        </div>
+                                                        <div class="amount">
+                                                            <input class="number" type="number" id="number{{ search_no }}{{ forloop.counter }}" value="1"/>
+                                                        </div>
+                                                        <div class="amount-button"
+                                                             id="increase"
+                                                             onclick="increaseValue({{ search_no }}{{ forloop.counter }})"
+                                                             value="Increase Value">+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="bot-field">
+                                                    <span class="price-field">
+                                                        Cena: {{ product.price|floatformat:2 }}zł
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 {% endfor %}
+                                {% endwith %}
                             </div>
                         </div>
                     </div>
