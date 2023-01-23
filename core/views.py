@@ -102,6 +102,7 @@ def multi_product(request):
                         "product_query": product_query,
                         "shop_selection": shop_selection,
                         "products": products,
+                        "quantity": quantity,
                     },
                 )
                 count += 1
@@ -186,11 +187,29 @@ def add_product(request):
         cart.save()
         product.save()
         # Stay on same site
-        if request.get_full_path() == "search/add_product/":
+        print(request.get_full_path())
+        # if add_product was called in search
+        if str(request.get_full_path()) == "/search/add_product/":
             return redirect(request.META["HTTP_REFERER"])
-        elif request.get_full_path() == "multi-search/add_product/":
-            context = request.session.get('multi-search-rendered')
+        # if add_product was called in multisearch
+        elif str(request.get_full_path()) == "/add_product/":
+            # read products from multisearch page from which it was called
+            context = str(request.session.get('multi-search-rendered'))
+            # change to dict from string
             rendered = ast.literal_eval(context)
+
+            product_to_remove = None
+            counter = 0
+            for record in rendered:
+                for element in record["products"]:
+                    if element["name"] == cartjson["name"]:
+                        product_to_remove = counter
+                        break
+                if product_to_remove is not None:
+                    break
+                counter += 1
+            del rendered[product_to_remove]
+            request.session['multi-search-rendered'] = str(rendered)
             form = MultiSearchFrom()
             return render(
                 request,
@@ -198,7 +217,7 @@ def add_product(request):
                 {"rendered": rendered, "form": form},
             )
         else:
-            messages.error(request, "Błędna ilość produktu.")
+            messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
             return redirect(request.META["HTTP_REFERER"], messages)
 
 

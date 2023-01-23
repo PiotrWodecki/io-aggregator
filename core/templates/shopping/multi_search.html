@@ -73,7 +73,7 @@
                                             <div class="card-footer">
                                                 <div class="d-flex flex-wrap mt-2">
                                                     <div class="d-flex me-2 mb-1">
-                                                        <form action="add_product/" method="post">
+                                                        <form action="/add_product/" method="post">
                                                             {% csrf_token %}
                                                             <input type="hidden" name="product" id="{{ search_no }}{{ forloop.counter }}" value="{{ product }}" />
                                                             <input type="hidden" name="getNumber" value="0" id="amount{{ search_no }}{{ forloop.counter }}"/>
@@ -90,7 +90,7 @@
                                                              value="Decrease Value">-
                                                         </div>
                                                         <div class="amount">
-                                                            <input class="number" type="number" id="number{{ search_no }}{{ forloop.counter }}" value="1"/>
+                                                            <input class="number" type="number" id="number{{ search_no }}{{ forloop.counter }}" value="{{ render.quantity }}"/>
                                                         </div>
                                                         <div class="amount-button"
                                                              id="increase"

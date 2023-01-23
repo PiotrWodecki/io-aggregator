@@ -13,7 +13,7 @@
                     <div class="card-footer">
                         <div class="d-flex flex-wrap mt-2">
                             <div class="d-flex me-2 mb-1">
-                                <form action="add_product/" method="post">
+                                <form action="/add_product/" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="product" id="{{ forloop.counter }}" value="{{ product }}" />
                                     <input type="hidden" name="getNumber" value="0" id="amount{{ forloop.counter }}"/>
