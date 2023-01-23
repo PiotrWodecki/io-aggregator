@@ -1,4 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
+    session = models.CharField(max_length=255, default="")
 
 
 class Product(models.Model):
@@ -6,12 +12,13 @@ class Product(models.Model):
         Medicine = 0
         Cosmetics = 1
 
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048, primary_key=True)
     shop_url = models.URLField(max_length=200)
     image_url = models.URLField(max_length=200)
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
-    lowest_price = models.DecimalField(max_digits=100, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return self.name
@@ -19,20 +26,19 @@ class Product(models.Model):
 
 class Seller(models.Model):
     url = models.URLField(max_length=200, primary_key=True)
-    image = models.URLField(max_length=200)
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.url}"
+        return f"{self.name} at {self.url}"
 
 
 class ProductOffer(models.Model):
     product_buy_url = models.URLField(max_length=2048, primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=100, decimal_places=2)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.product} offered by {self.seller.url}"
+        return f"{self.product} offered by {self.seller}"
 
 
 class Delivery(models.Model):

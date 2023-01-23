@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% extends 'shopping/search.html' %}
 {% block results %}
-<div class="col container mt-4" style="display: inline-block; vertical-align: top">
+<div class="col container mt-5" style="display: inline-block; vertical-align: top">
     <div class="row">
         {% for product in products %}
             <div class="col-md-4 mb-4">
@@ -13,10 +13,15 @@
                     <div class="card-footer">
                         <div class="d-flex flex-wrap mt-2">
                             <div class="d-flex me-2 mb-1">
-                                <a href="{{ product.link }}"
-                                   class="btn btn-primary btn-block add-btn"
-                                   id="add{{ forloop.counter }}">Dodaj
-                                </a>
+                                <form action="add_product/" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product" id="{{ forloop.counter }}" value="{{ product }}" />
+                                    <input type="hidden" name="getNumber" value="0" id="amount{{ forloop.counter }}"/>
+                                    <input type="submit" value="Dodaj"
+                                       class="btn btn-primary btn-block"
+                                       product="{{ product }}"
+                                       onclick="getValue({{ forloop.counter }})"/>
+                                </form>
                             </div>
                             <div class="d-flex flex-row">
                                 <div class="amount-button"
@@ -25,7 +30,7 @@
                                      value="Decrease Value">-
                                 </div>
                                 <div class="amount">
-                                    <input class="number" type="number" id="number{{ forloop.counter }}" value="0"/>
+                                    <input class="number" type="number" id="number{{ forloop.counter }}" value="1"/>
                                 </div>
                                 <div class="amount-button"
                                      id="increase"
