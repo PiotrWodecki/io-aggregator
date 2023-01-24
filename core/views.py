@@ -6,7 +6,7 @@ from typing import List
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import render
 from django.contrib import messages
 from io import StringIO, BytesIO
@@ -237,3 +237,12 @@ def shopping_cart(request):
     total_prices = [product.price * product.quantity for product in products]
     content = zip(products, total_prices)
     return render(request, "shopping/shopping_cart.html", {"content": content})
+
+
+@csrf_protect
+def cart_delete(request, pk):
+    product = get_object_or_404(Cart, pk=pk)
+    if request.method == "POST":
+        product.delete()
+        product.save()
+    return redirect("shopping_cart")
