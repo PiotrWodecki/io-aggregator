@@ -190,9 +190,12 @@ def add_product(request):
         cart.save()
         product.save()
         # if add_product was called in search
-        context = str(request.session.get("multi-search-rendered"))
-        if context == "":
+        try:
+            context = str(request.session.get("multi-search-rendered"))
+        except (Exception,):
             # Stay on same site
+            return redirect(request.META["HTTP_REFERER"])
+        if context == "":
             return redirect(request.META["HTTP_REFERER"])
         # if add_product was called in multisearch
         elif len(context) > 0:
