@@ -14,6 +14,8 @@ def validate_multi_search_file(value):
 
 def validate_multi_search_files_row(row):
     try:
+        if len(row) > 4:
+            return False, "Za dużo przecinków w wierszu."
         if len(str(row[0])) > 32:
             # name of product can not be longer than 32
             return False, "Produkt ma zbyt długą nazwę."
@@ -28,4 +30,4 @@ def validate_multi_search_files_row(row):
             return False, "Złe ustawienia ilości."
         return True, ""
     except (Exception,):
-        return False, "Błąd przy przetwarzaniu listy zakupów."
+        return False, "Błąd w liście zakupów. Sprawdź jej poprwaność."
