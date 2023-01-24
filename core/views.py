@@ -48,6 +48,8 @@ def select_product(request):
             return render(request, "shopping/search.html", {"form": form})
         if products is None or len(products) == 0:
             messages.error(request, "Brak wyników wyszukiwania")
+        # in add_product it is used to identify single search product
+        request.session['multi-search-rendered'] = ""
         return render(
             request,
             "shopping/select_product.html",
@@ -106,6 +108,7 @@ def multi_product(request):
                     },
                 )
                 count += 1
+            # it is used to load products list after add any product to cart
             request.session['multi-search-rendered'] = str(rendered)
             return render(
                 request,
@@ -189,12 +192,12 @@ def add_product(request):
         # Stay on same site
         print(request.get_full_path())
         # if add_product was called in search
-        if str(request.get_full_path()) == "/search/add_product/":
+        context = str(request.session.get('multi-search-rendered'))
+        if context == "":
             return redirect(request.META["HTTP_REFERER"])
         # if add_product was called in multisearch
-        elif str(request.get_full_path()) == "/add_product/":
+        elif len(context) > 0:
             # read products from multisearch page from which it was called
-            context = str(request.session.get('multi-search-rendered'))
             # change to dict from string
             rendered = ast.literal_eval(context)
 
@@ -208,7 +211,9 @@ def add_product(request):
                 if product_to_remove is not None:
                     break
                 counter += 1
+            # removing product which was added to cart
             del rendered[product_to_remove]
+            # and save it in session variable
             request.session['multi-search-rendered'] = str(rendered)
             form = MultiSearchFrom()
             return render(
