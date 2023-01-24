@@ -15,9 +15,9 @@
                     <p class="mt-2">Cena całkowita: {{ total_price }}</p>
                 </div>
                 <div class="col">
-                    <form action="{% url 'cart_delete' pk=product.url %}" method="post">
+                    <form action="{% url 'cart_delete' %}" method="post">
                         {% csrf_token %}
-                        <input type="submit" value="Usuń">
+                        <button type="submit" name="delete" class="btn btn-outline-secondary btn-block" value="{{ product.url }}">Usuń</button>
                     </form>
                 </div>
             </div>

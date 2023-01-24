@@ -240,9 +240,10 @@ def shopping_cart(request):
 
 
 @csrf_protect
-def cart_delete(request, pk):
-    product = get_object_or_404(Cart, pk=pk)
+def cart_delete(request):
     if request.method == "POST":
+        carry = request.POST
+        pk = carry["delete"]
+        product = Product.objects.filter(url=pk)
         product.delete()
-        product.save()
     return redirect("shopping_cart")
