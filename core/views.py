@@ -170,7 +170,6 @@ def add_product(request):
             # Move this to where registration is
             # So the cart is created at signing-up
             cart = Cart(user=user.id)
-        # Hard to test, probably need refactoring
         # Chack if cart with X session exist
         elif len(Cart.objects.filter(session=session_id)) != 0:
             cart = Cart.objects.filter(session=session_id)[0]

@@ -17,15 +17,18 @@ def fill_product_offers(products: List[Product]) -> None:
         except (Exception,):
             continue
         for offer in offers:
-            seller, created = Seller.objects.get_or_create(
-                url=offer["shop_url"], image=offer["shop_image"]
-            )
-            product_offer_model = ProductOffer.objects.create(
-                product=product,
-                product_buy_url=offer["link"],
-                seller=seller,
-                price=offer["price"],
-            )
+            try:
+                seller, created = Seller.objects.get_or_create(
+                    url=offer["shop_url"], image=offer["shop_image"]
+                )
+                product_offer_model = ProductOffer.objects.create(
+                    product=product,
+                    product_buy_url=offer["link"],
+                    seller=seller,
+                    price=offer["price"],
+                )
+            except(Exception):
+                continue
 
             for delivery in offer["delivery"]:
                 delivery_model = Delivery.objects.create(
@@ -37,7 +40,7 @@ def fill_product_offers(products: List[Product]) -> None:
                 delivery_model.save()
             seller.save()
             product_offer_model.save()
-        time.sleep(10)
+        #time.sleep(10)
 
 
 def aggregate_products_minimize_shops(
@@ -61,9 +64,7 @@ def aggregate_products_minimize_shops(
         .distinct()
         .order_by("-count")
     ):
-        offers = ProductOffer.objects.filter(
-            product__in=products, seller=seller
-        ).order_by("price")
+        offers = ProductOffer.objects.filter(product__in=products, seller=seller).order_by('product__price')
         for offer in offers:
             if offer.product_id not in [
                 offer.product_id for offer in selected_product_offers
