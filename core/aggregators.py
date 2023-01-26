@@ -27,7 +27,7 @@ def fill_product_offers(products: List[Product]) -> None:
                     seller=seller,
                     price=offer["price"],
                 )
-            except(Exception):
+            except (Exception):
                 continue
 
             for delivery in offer["delivery"]:
@@ -64,7 +64,9 @@ def aggregate_products_minimize_shops(
         .distinct()
         .order_by("-count")
     ):
-        offers = ProductOffer.objects.filter(product__in=products, seller=seller).order_by('product__price')
+        offers = ProductOffer.objects.filter(
+            product__in=products, seller=seller
+        ).order_by("product__price")
         for offer in offers:
             if offer.product_id not in [
                 offer.product_id for offer in selected_product_offers
@@ -79,7 +81,9 @@ def aggregate_products_minimize_shops(
                     lowest_price_delivery = Delivery.objects.create(
                         name="Nieznana dostawa", price=0, product_offer=offer
                     )
-                if not ProductOffer.objects.filter(product_buy_url=offer.product_buy_url).exists():
+                if not ProductOffer.objects.filter(
+                    product_buy_url=offer.product_buy_url
+                ).exists():
                     selected_product_offers.append(
                         ProductOffer.objects.create(
                             product_buy_url=offer.product_buy_url,
