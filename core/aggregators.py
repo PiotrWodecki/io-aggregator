@@ -79,16 +79,15 @@ def aggregate_products_minimize_shops(
                     lowest_price_delivery = Delivery.objects.create(
                         name="Nieznana dostawa", price=0, product_offer=offer
                     )
-                selected_deliveries.append(lowest_price_delivery)
-                selected_product_offers.append(
-                    ProductOffer(
-                        product_buy_url=offer.product_buy_url,
-                        price=offer.price,
-                        seller=offer.seller,
-                        product=offer.product,
+                if not ProductOffer.objects.filter(product_buy_url=offer.product_buy_url).exists():
+                    selected_product_offers.append(
+                        ProductOffer.objects.create(
+                            product_buy_url=offer.product_buy_url,
+                            product=offer.product,
+                            seller=offer.seller,
+                        )
                     )
-                )
-                total_prices.append(offer.price * offer.product.quantity)
+                    total_prices.append(offer.product.price * offer.product.quantity)
     for product in products:
         if (
             product.shop_url != ""
