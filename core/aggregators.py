@@ -40,7 +40,7 @@ def fill_product_offers(products: List[Product]) -> None:
                 delivery_model.save()
             seller.save()
             product_offer_model.save()
-        #time.sleep(10)
+        time.sleep(10)
 
 
 def aggregate_products_minimize_shops(
