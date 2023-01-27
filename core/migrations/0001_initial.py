@@ -15,49 +15,103 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Cart',
+            name="Cart",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('session', models.CharField(default='', max_length=255)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("session", models.CharField(default="", max_length=255)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('url', models.URLField(max_length=2048, primary_key=True, serialize=False)),
-                ('shop_url', models.URLField()),
-                ('image_url', models.URLField()),
-                ('name', models.CharField(max_length=100)),
-                ('quantity', models.IntegerField()),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.cart')),
+                (
+                    "url",
+                    models.URLField(max_length=2048, primary_key=True, serialize=False),
+                ),
+                ("shop_url", models.URLField()),
+                ("image_url", models.URLField()),
+                ("name", models.CharField(max_length=100)),
+                ("quantity", models.IntegerField()),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "cart",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.cart"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Seller',
+            name="Seller",
             fields=[
-                ('url', models.URLField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100)),
-                ('image', models.URLField()),
+                ("url", models.URLField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=100)),
+                ("image", models.URLField()),
             ],
         ),
         migrations.CreateModel(
-            name='ProductOffer',
+            name="ProductOffer",
             fields=[
-                ('product_buy_url', models.URLField(max_length=2048, primary_key=True, serialize=False)),
-                ('price', models.DecimalField(decimal_places=2, default=None, max_digits=10)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.product')),
-                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.seller')),
+                (
+                    "product_buy_url",
+                    models.URLField(max_length=2048, primary_key=True, serialize=False),
+                ),
+                (
+                    "price",
+                    models.DecimalField(decimal_places=2, default=None, max_digits=10),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.product"
+                    ),
+                ),
+                (
+                    "seller",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.seller"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Delivery',
+            name="Delivery",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('price', models.DecimalField(decimal_places=2, max_digits=100)),
-                ('product_offer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.productoffer')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=100)),
+                (
+                    "product_offer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="core.productoffer",
+                    ),
+                ),
             ],
         ),
     ]
