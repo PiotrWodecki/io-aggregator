@@ -310,8 +310,8 @@ def get_offers(website_link):
             }
         )
         counter += 1
-    time.sleep(6)
-
+    if len(offers) != 1:
+        time.sleep(6)
     return offer_list
 
 
