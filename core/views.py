@@ -193,7 +193,7 @@ def add_product(request):
         try:
             context = str(request.session.get("multi-search-rendered"))
         except (Exception,):
-            # Stay on same site
+            # Stay on the same site
             return redirect(request.META["HTTP_REFERER"])
         if context == "":
             return redirect(request.META["HTTP_REFERER"])
