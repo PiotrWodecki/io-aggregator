@@ -30,7 +30,7 @@ class Seller(models.Model):
     image = models.URLField(max_length=2048)
 
     def __str__(self):
-        return f"{self.name} at {self.url}"
+        return f"{self.url}"
 
 
 class ProductOffer(models.Model):

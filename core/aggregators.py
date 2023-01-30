@@ -17,18 +17,15 @@ def fill_product_offers(products: List[Product]) -> None:
         except (Exception,):
             continue
         for offer in offers:
-            try:
-                seller, created = Seller.objects.get_or_create(
-                    url=offer["shop_url"], image=offer["shop_image"]
-                )
-                product_offer_model = ProductOffer.objects.create(
-                    product=product,
-                    product_buy_url=offer["link"],
-                    seller=seller,
-                    price=offer["price"],
-                )
-            except (Exception):
-                continue
+            seller, created = Seller.objects.get_or_create(
+                url=offer["shop_url"], image=offer["shop_image"]
+            )
+            product_offer_model = ProductOffer.objects.create(
+                product=product,
+                product_buy_url=offer["link"],
+                seller=seller,
+                price=offer["price"],
+            )
 
             for delivery in offer["delivery"]:
                 delivery_model = Delivery.objects.create(
@@ -66,7 +63,7 @@ def aggregate_products_minimize_shops(
     ):
         offers = ProductOffer.objects.filter(
             product__in=products, seller=seller
-        ).order_by("product__price")
+        ).order_by("price")
         for offer in offers:
             if offer.product_id not in [
                 offer.product_id for offer in selected_product_offers
@@ -85,7 +82,7 @@ def aggregate_products_minimize_shops(
                 selected_product_offers.append(
                     ProductOffer(
                         product_buy_url=offer.product_buy_url,
-                        price=offer.product.price,
+                        price=offer.price,
                         seller=offer.seller,
                         product=offer.product,
                     )
@@ -96,11 +93,13 @@ def aggregate_products_minimize_shops(
             product.shop_url != ""
             and ProductOffer.objects.filter(product=product).count() == 0
         ):
+            tmp_seller = Seller.objects.create(url=product.shop_url, image="")
             selected_product_offers.append(
                 ProductOffer(
                     product_buy_url=product.url,
-                    price=product.lowest_price,
+                    price=product.price,
                     product=product,
+                    seller=tmp_seller,
                 )
             )
             selected_deliveries.append(
@@ -110,7 +109,7 @@ def aggregate_products_minimize_shops(
                     product_offer=selected_product_offers[-1],
                 )
             )
-            total_prices.append(product.lowest_price * product.quantity)
+            total_prices.append(product.price * product.quantity)
     return selected_product_offers, selected_deliveries, total_prices
 
 

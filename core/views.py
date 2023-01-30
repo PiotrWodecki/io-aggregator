@@ -184,6 +184,7 @@ def add_product(request):
             name=cartjson["name"],
             price=cartjson["price"],
             quantity=cartjson["quantity"],
+            shop_url=cartjson["shop_url"],
         )
         # Save selected product to DB
         cart.save()
