@@ -13,7 +13,7 @@ class Product(models.Model):
         Cosmetics = 1
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    url = models.URLField(max_length=2048, primary_key=True)
+    url = models.URLField(max_length=2048)
     shop_url = models.URLField(max_length=200)
     image_url = models.URLField(max_length=200)
     name = models.CharField(max_length=100)
@@ -34,7 +34,7 @@ class Seller(models.Model):
 
 
 class ProductOffer(models.Model):
-    product_buy_url = models.URLField(max_length=2048, primary_key=True)
+    product_buy_url = models.URLField(max_length=2048)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 

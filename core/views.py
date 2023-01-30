@@ -178,15 +178,20 @@ def add_product(request):
         else:
             cart = Cart(session=session_id)
         # To save data
-        product = Product(
-            cart=cart,
-            url=cartjson["link"],
-            image_url=cartjson["image"],
-            name=cartjson["name"],
-            price=cartjson["price"],
-            quantity=cartjson["quantity"],
-        )
-        # Save selected product to DB
+
+        if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
+            product = Product(
+                cart=cart,
+                url=cartjson["link"],
+                image_url=cartjson["image"],
+                name=cartjson["name"],
+                price=cartjson["price"],
+                quantity=cartjson["quantity"],
+            )
+        else:
+            product = Product.objects.filter(cart=cart, url=cartjson["link"])[0]
+            product.quantity = cartjson["quantity"]
+
         cart.save()
         product.save()
         # if add_product was called in search
@@ -243,9 +248,14 @@ def shopping_cart(request):
 
 @csrf_protect
 def cart_delete(request):
+    cart = Cart()
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=request.session.session_key)
     if request.method == "POST":
         carry = request.POST
-        pk = carry["delete"]
-        product = Product.objects.filter(url=pk)
+        url = carry["delete"]
+        product = Product.objects.filter(cart_id__in=cart, url=url)
         product.delete()
     return redirect("shopping_cart")
