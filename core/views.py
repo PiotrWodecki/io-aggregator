@@ -167,13 +167,19 @@ def add_product(request):
         # Check if user is logged in
         if request.user.is_authenticated:
             user = User(request.user)
+            # Checking 10 products in cart
+            if len(Cart.objects.filter(user=user.id)) >= 10:
+                messages.error(request, "Koszyk jest pełny.")
+                return redirect(request.META["HTTP_REFERER"], messages)
             # Move this to where registration is
             # So the cart is created at signing-up
             cart = Cart(user=user.id)
-        # Chack if cart with X session exist
+        # Check if cart with X session exist
         elif len(Cart.objects.filter(session=session_id)) != 0:
+            if len(Cart.objects.filter(session=session_id)[0]) >= 10:
+                messages.error(request, "Koszyk jest pełny.")
+                return redirect(request.META["HTTP_REFERER"], messages)
             cart = Cart.objects.filter(session=session_id)[0]
-        # Save new cart otherwise
         else:
             cart = Cart(session=session_id)
         # To save data
