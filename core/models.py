@@ -14,8 +14,8 @@ class Product(models.Model):
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048, primary_key=True)
-    shop_url = models.URLField(max_length=200)
-    image_url = models.URLField(max_length=200)
+    shop_url = models.URLField(max_length=2048)
+    image_url = models.URLField(max_length=2048)
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
