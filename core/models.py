@@ -14,8 +14,8 @@ class Product(models.Model):
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048)
-    shop_url = models.URLField(max_length=200)
-    image_url = models.URLField(max_length=200)
+    shop_url = models.URLField(max_length=2048)
+    image_url = models.URLField(max_length=2048)
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -25,18 +25,19 @@ class Product(models.Model):
 
 
 class Seller(models.Model):
-    url = models.URLField(max_length=200, primary_key=True)
+    url = models.URLField(max_length=2048, primary_key=True)
     name = models.CharField(max_length=100)
-    image = models.URLField(max_length=200)
+    image = models.URLField(max_length=2048)
 
     def __str__(self):
-        return f"{self.name} at {self.url}"
+        return f"{self.url}"
 
 
 class ProductOffer(models.Model):
     product_buy_url = models.URLField(max_length=2048)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=None)
 
     def __str__(self):
         return f"{self.product} offered by {self.seller}"

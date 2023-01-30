@@ -93,11 +93,13 @@ def aggregate_products_minimize_shops(
             product.shop_url != ""
             and ProductOffer.objects.filter(product=product).count() == 0
         ):
+            tmp_seller = Seller.objects.create(url=product.shop_url, image="")
             selected_product_offers.append(
                 ProductOffer(
                     product_buy_url=product.url,
-                    price=product.lowest_price,
+                    price=product.price,
                     product=product,
+                    seller=tmp_seller,
                 )
             )
             selected_deliveries.append(
@@ -107,7 +109,7 @@ def aggregate_products_minimize_shops(
                     product_offer=selected_product_offers[-1],
                 )
             )
-            total_prices.append(product.lowest_price * product.quantity)
+            total_prices.append(product.price * product.quantity)
     return selected_product_offers, selected_deliveries, total_prices
 
 

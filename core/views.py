@@ -170,7 +170,6 @@ def add_product(request):
             # Move this to where registration is
             # So the cart is created at signing-up
             cart = Cart(user=user.id)
-        # Hard to test, probably need refactoring
         # Chack if cart with X session exist
         elif len(Cart.objects.filter(session=session_id)) != 0:
             cart = Cart.objects.filter(session=session_id)[0]
@@ -178,7 +177,6 @@ def add_product(request):
         else:
             cart = Cart(session=session_id)
         # To save data
-
         if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
             product = Product(
                 cart=cart,
@@ -187,11 +185,11 @@ def add_product(request):
                 name=cartjson["name"],
                 price=cartjson["price"],
                 quantity=cartjson["quantity"],
+                shop_url=cartjson["shop_url"],
             )
         else:
             product = Product.objects.filter(cart=cart, url=cartjson["link"])[0]
             product.quantity = cartjson["quantity"]
-
         cart.save()
         product.save()
         # if add_product was called in search
