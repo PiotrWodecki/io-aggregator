@@ -191,16 +191,18 @@ def add_product(request):
         product.quantity = cart_json["quantity"]
     cart.save()
     product.save()
+
     # if add_product was called in search
+    if "/?q=" in request.META["HTTP_REFERER"]:
+        return redirect(request.META["HTTP_REFERER"])
+
+    # if add_product was called in multi_search
     try:
         context = str(request.session.get("multi-search-rendered"))
     except (Exception,):
         # Stay on the same site
         return redirect(request.META["HTTP_REFERER"])
-    if "/?q=" in request.META["HTTP_REFERER"]:
-        return redirect(request.META["HTTP_REFERER"])
-    # if add_product was called in multi_search
-    elif len(context) > 0:
+    if len(context) > 0:
         # read products from multi_search page from which it was called
         # change to dict from string
         rendered = ast.literal_eval(context)
@@ -219,7 +221,7 @@ def add_product(request):
             del rendered[product_to_remove]
         except TypeError:
             # TypeError can be trigger when user went back in web browser and click add to cart
-            # something what already is in cart
+            # something what already is in cart (deleting wants trigger at product which is not in list)
             pass
         # and save it in session variable
         request.session["multi-search-rendered"] = str(rendered)
