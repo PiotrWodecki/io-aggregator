@@ -2,48 +2,49 @@
 {% extends 'shopping/search.html' %}
 {% block title %}Wyszukaj plikiem{% endblock %}
 {% block additional_help %}
-    <p>
+    <div class="mt-3">
+        <p class="mb-1">
         <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseExample"
                 aria-expanded="false" aria-controls="collapseExample">
             Jak wyszukać plikiem?
         </button>
-    </p>
-    <div class="collapse" id="collapseExample">
-        <div class="card card-body">
-            <p>Aby wyszukać kilka produktów jednocześnie, należy przesłać plik w formacie txt.<br>
-                Struktura każdej linii w pliku powinna wyglądać następująco:
-            <p><code>nazwa produktu,filtr sklepu,nazwa kategorii,liczba produktów<br>
-                </code></p>
-            <p>Opis parametrów:</p>
-            <ul>
-                <li>nazwa produktu:</li>
+        </p>
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+                <p>Aby wyszukać kilka produktów jednocześnie, należy przesłać plik w formacie txt.<br>
+                    Struktura każdej linii w pliku powinna wyglądać następująco:
+                <p><code>nazwa produktu,filtr sklepu,nazwa kategorii,liczba produktów<br>
+                    </code></p>
+                <p>Opis parametrów:</p>
                 <ul>
-                    <li>dowolny tekst</li>
+                    <li>nazwa produktu:</li>
+                    <ul>
+                        <li>dowolny tekst</li>
+                    </ul>
+                    <li>filtr sklepu:</li>
+                    <ul>
+                        <li>1 - wszystkie sklepy</li>
+                        <li>2 - tylko Allegro</li>
+                        <li>3 - tylko Ceneo</li>
+                    </ul>
+                    <li>kategoria:</li>
+                    <ul>
+                        <li>Zdrowie</li>
+                        <li>Uroda</li>
+                    </ul>
+                    <li>liczba produktów:</li>
+                    <ul>
+                        <li> liczba naturalna od 1 do 10</li>
+                    </ul>
                 </ul>
-                <li>filtr sklepu:</li>
-                <ul>
-                    <li>1 - wszystkie sklepy</li>
-                    <li>2 - tylko Allegro</li>
-                    <li>3 - tylko Ceneo</li>
-                </ul>
-                <li>kategoria:</li>
-                <ul>
-                    <li>Zdrowie</li>
-                    <li>Uroda</li>
-                </ul>
-                <li>liczba produktów:</li>
-                <ul>
-                    <li> liczba naturalna od 1 do 10</li>
-                </ul>
-            </ul>
-            <p>Przykład:<br>
-                <code>Aspiryna,1,Zdrowie,7</code></p>
-            <p class="mb-0">Plik nie może posiadać nagłówka, niedozwolone są przecinki w nazwach.<br>
-                Maksymalna liczba produktów w pliku wynosi 10.</p>
+                <p>Przykład:<br>
+                    <code>Aspiryna,1,Zdrowie,7</code></p>
+                <p class="mb-0">Plik nie może posiadać nagłówka, niedozwolone są przecinki w nazwach.<br>
+                    Maksymalna liczba produktów w pliku wynosi 10.</p>
+            </div>
         </div>
     </div>
-
 {% endblock %}
 {% block results %}
     <div class="accordion col mt-1" id="accordionExample">
