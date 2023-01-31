@@ -60,15 +60,18 @@ def select_product(request):
 
 
 def multi_product(request):
-    context = request.session["multi-search-rendered"]
-    rendered = ast.literal_eval(context)
-    if len(rendered) > 0:
-        form = MultiSearchFrom()
-        return render(
-            request,
-            "shopping/multi_search.html",
-            {"rendered": rendered, "form": form},
-        )
+    try:
+        context = request.session["multi-search-rendered"]
+        rendered = ast.literal_eval(context)
+        if len(rendered) > 0:
+            form = MultiSearchFrom()
+            return render(
+                request,
+                "shopping/multi_search.html",
+                {"rendered": rendered, "form": form},
+            )
+    except KeyError:
+        pass
     if request.method == "POST":
         form = MultiSearchFrom(request.POST, request.FILES)
         if form.is_valid():
