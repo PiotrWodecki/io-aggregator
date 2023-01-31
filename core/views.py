@@ -163,78 +163,76 @@ def add_product(request):
     if not 0 < cartjson["quantity"] <= 10:
         messages.error(request, "Błędna ilość produktu.")
         return redirect(request.META["HTTP_REFERER"], messages)
+    # Check if user is logged in
+    if request.user.is_authenticated:
+        user = User.objects.get(id=request.user.id)
+        if len(Cart.objects.filter(user=user)) != 0:
+            cart = Cart.objects.get(user=user)
+        else:
+            cart = Cart(user=user)
+    # Check if cart with X session exist
+    elif len(Cart.objects.filter(session=session_id)) != 0:
+        cart = Cart.objects.get(session=session_id)
     else:
-        # Check if user is logged in
-        if request.user.is_authenticated:
-            user = User(request.user)
-            # Checking 10 products in cart
-            if len(Cart.objects.filter(user=user.id)) >= 10:
-                messages.error(request, "Koszyk jest pełny.")
-                return redirect(request.META["HTTP_REFERER"], messages)
-            # Move this to where registration is
-            # So the cart is created at signing-up
-            cart = Cart(user=user.id)
-        # Check if cart with X session exist
-        elif len(Cart.objects.filter(session=session_id)) != 0:
-            if len(Cart.objects.filter(session=session_id)[0]) >= 10:
-                messages.error(request, "Koszyk jest pełny.")
-                return redirect(request.META["HTTP_REFERER"], messages)
-            cart = Cart.objects.filter(session=session_id)[0]
-        else:
-            cart = Cart(session=session_id)
-        # To save data
-        if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
-            product = Product(
-                cart=cart,
-                url=cartjson["link"],
-                image_url=cartjson["image"],
-                name=cartjson["name"],
-                price=cartjson["price"],
-                quantity=cartjson["quantity"],
-                shop_url=cartjson["shop_url"],
-            )
-        else:
-            product = Product.objects.filter(cart=cart, url=cartjson["link"])[0]
-            product.quantity = cartjson["quantity"]
-        cart.save()
-        product.save()
-        # if add_product was called in search
-        try:
-            context = str(request.session.get("multi-search-rendered"))
-        except (Exception,):
-            # Stay on the same site
-            return redirect(request.META["HTTP_REFERER"])
-        if context == "":
-            return redirect(request.META["HTTP_REFERER"])
-        # if add_product was called in multisearch
-        elif len(context) > 0:
-            # read products from multisearch page from which it was called
-            # change to dict from string
-            rendered = ast.literal_eval(context)
+        cart = Cart(session=session_id)
+    # To save data
+    if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
+        product = Product(
+            cart=cart,
+            url=cartjson["link"],
+            image_url=cartjson["image"],
+            name=cartjson["name"],
+            price=cartjson["price"],
+            quantity=cartjson["quantity"],
+            shop_url=cartjson["shop_url"],
+        )
+    else:
+        product = Product.objects.filter(cart=cart, url=cartjson["link"])[0]
+        product.quantity = cartjson["quantity"]
+    cart.save()
+    product.save()
+    # if add_product was called in search
+    try:
+        context = str(request.session.get("multi-search-rendered"))
+    except (Exception,):
+        # Stay on the same site
+        return redirect(request.META["HTTP_REFERER"])
+    if context == "":
+        return redirect(request.META["HTTP_REFERER"])
+    # if add_product was called in multisearch
+    elif len(context) > 0:
+        # read products from multisearch page from which it was called
+        # change to dict from string
+        rendered = ast.literal_eval(context)
 
-            product_to_remove = None
-            counter = 0
-            for record in rendered:
-                for element in record["products"]:
-                    if element["name"] == cartjson["name"]:
-                        product_to_remove = counter
-                        break
-                if product_to_remove is not None:
+        product_to_remove = None
+        counter = 0
+        for record in rendered:
+            for element in record["products"]:
+                if element["name"] == cartjson["name"]:
+                    product_to_remove = counter
                     break
-                counter += 1
-            # removing product which was added to cart
+            if product_to_remove is not None:
+                break
+            counter += 1
+        # removing product which was added to cart
+        try:
             del rendered[product_to_remove]
-            # and save it in session variable
-            request.session["multi-search-rendered"] = str(rendered)
-            form = MultiSearchFrom()
-            return render(
-                request,
-                "shopping/multi_search.html",
-                {"rendered": rendered, "form": form},
-            )
-        else:
-            messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
-            return redirect(request.META["HTTP_REFERER"], messages)
+        except TypeError:
+            # TypeError can be trigger when user went back in web browser and click add to cart
+            # something what already is in cart
+            pass
+        # and save it in session variable
+        request.session["multi-search-rendered"] = str(rendered)
+        form = MultiSearchFrom()
+        return render(
+            request,
+            "shopping/multi_search.html",
+            {"rendered": rendered, "form": form},
+        )
+    else:
+        messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
+        return redirect(request.META["HTTP_REFERER"], messages)
 
 
 @csrf_protect
