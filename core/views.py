@@ -60,6 +60,15 @@ def select_product(request):
 
 
 def multi_product(request):
+    context = request.session["multi-search-rendered"]
+    rendered = ast.literal_eval(context)
+    if len(rendered) > 0:
+        form = MultiSearchFrom()
+        return render(
+            request,
+            "shopping/multi_search.html",
+            {"rendered": rendered, "form": form},
+        )
     if request.method == "POST":
         form = MultiSearchFrom(request.POST, request.FILES)
         if form.is_valid():
@@ -148,6 +157,12 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
+    if not search_word:
+        messages.error(request, "Produkt niesprecyzowany.")
+        try:
+            return redirect(request.META["HTTP_REFERER"], messages)
+        except KeyError:
+            return redirect("/", messages)
     if not request.session.session_key:
         request.session.save()
     # Google says a session lasts two weeks by default
@@ -225,14 +240,10 @@ def add_product(request):
             pass
         # and save it in session variable
         request.session["multi-search-rendered"] = str(rendered)
-        form = MultiSearchFrom()
-        return render(
-            request,
-            "shopping/multi_search.html",
-            {"rendered": rendered, "form": form},
-        )
-    messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
-    return redirect(request.META["HTTP_REFERER"], messages)
+        return redirect("/multi-search/")
+    else:
+        request.session["multi-search-rendered"] = ""
+        return redirect("/multi-search/")
 
 
 @csrf_protect
