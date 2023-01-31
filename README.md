@@ -28,11 +28,17 @@ source myenv/bin/activate
 ```
 pip3 install -r requirements.txt
 ```
-5. Run the Django project:
+5. Migrate DB:
+```
+python3 manage.py migrate
+```
+6. Run the Django project:
 ```
 python3 manage.py runserver
 ```
 You have successfully set up the Django project with virtual environment and required packages.
+
+To achieve full SMTP functionality, add `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` environment variables, otherwise emails will be saved to `/tmp/app-messages`.
 
 ## Deployment
 Recommended deployment stack is **Apache + mod_wsgi**.
