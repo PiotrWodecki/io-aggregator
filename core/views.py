@@ -149,8 +149,7 @@ def shopping_history(request):
 def add_product(request):
     search_word = request.POST
     if not search_word:
-        messages.error(request, "Produkt nie został sprecyzowany.")
-        return redirect("/", messages)
+        return redirect("/")
     if not request.session.session_key:
         request.session.save()
     # Google says a session lasts two weeks by default
