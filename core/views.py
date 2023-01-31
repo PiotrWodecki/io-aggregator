@@ -127,8 +127,14 @@ def multi_product(request):
     return render(request, "shopping/multi_search.html", {"form": form})
 
 
+@csrf_protect
 def aggregate_cart(request):
-    products = Product.objects.all()
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=request.session.session_key)
+
+    products = Product.objects.filter(cart_id__in=cart)
     fill_product_offers(products)
 
     aggregated_offers: List[ProductOffer]
