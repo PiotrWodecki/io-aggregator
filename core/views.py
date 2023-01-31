@@ -46,8 +46,6 @@ def select_product(request):
             return render(request, "shopping/search.html", {"form": form})
         if products is None or len(products) == 0:
             messages.error(request, "Brak wyników wyszukiwania")
-        # in add_product it is used to identify single search product
-        request.session["multi-search-rendered"] = ""
         return render(
             request,
             "shopping/select_product.html",
@@ -199,7 +197,7 @@ def add_product(request):
     except (Exception,):
         # Stay on the same site
         return redirect(request.META["HTTP_REFERER"])
-    if context == "":
+    if "/?q=" in request.META["HTTP_REFERER"]:
         return redirect(request.META["HTTP_REFERER"])
     # if add_product was called in multi_search
     elif len(context) > 0:
