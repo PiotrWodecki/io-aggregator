@@ -175,6 +175,10 @@ def add_product(request):
         cart = Cart.objects.get(session=session_id)
     else:
         cart = Cart(session=session_id)
+    # limit 10 products in cart
+    if len(Product.objects.filter(cart=cart)) >= 10:
+        messages.error(request, "Koszyk jest pełny.")
+        return redirect(request.META["HTTP_REFERER"], messages)
     # To save data
     if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
         product = Product(
@@ -204,7 +208,6 @@ def add_product(request):
         # read products from multisearch page from which it was called
         # change to dict from string
         rendered = ast.literal_eval(context)
-
         product_to_remove = None
         counter = 0
         for record in rendered:
@@ -230,9 +233,8 @@ def add_product(request):
             "shopping/multi_search.html",
             {"rendered": rendered, "form": form},
         )
-    else:
-        messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
-        return redirect(request.META["HTTP_REFERER"], messages)
+    messages.error(request, "Nieznany problem, spróbuj jeszcze raz.")
+    return redirect(request.META["HTTP_REFERER"], messages)
 
 
 @csrf_protect
