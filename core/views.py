@@ -5,8 +5,7 @@ from decimal import Decimal
 from typing import List
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.contrib import messages
 from io import StringIO, BytesIO
@@ -19,9 +18,8 @@ from .aggregators import (
     group_offers_deliveries_prices_by_shop,
 )
 from core.validators import validate_multi_search_files_row
-from .models import Product, ProductOffer, Delivery
+from .models import Product, ProductOffer, Delivery, User, Cart
 from .forms import MultiSearchFrom, SearchForm
-from .models import User, Product, Cart
 
 
 def search(request):
