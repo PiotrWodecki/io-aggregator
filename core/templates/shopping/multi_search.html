@@ -47,33 +47,35 @@
     </div>
 {% endblock %}
 {% block results %}
-    <div class="accordion col mt-1" id="accordionExample">
+    <div class="accordion col my-3" id="accordionExample">
         {% for render in rendered %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="heading{{ render.id }}">
+                <h3 class="accordion-header" id="heading{{ render.id }}">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapse{{ render.id }}" aria-expanded="true"
                             aria-controls="collapse{{ render.id }}">
                         {{ render.product_query }}
                     </button>
-                </h2>
+                </h3>
                 <div id="collapse{{ render.id }}"
                      class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
                      aria-labelledby="heading{{ render.id }}" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <div class="col container mt-5" style="display: inline-block; vertical-align: top">
+                        <div class="col container mt-3" style="display: inline-block; vertical-align: top">
                             <div class="row">
                                 {% with forloop.counter as search_no %}
                                 {% for product in render.products %}
-                                    <div class="col-xl-4 mb-4">
+                                    <div class="col-xl-6 mb-4">
                                         <div class="card h-100">
                                             <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
                                             <div class="card-body">
-                                                <h6 class="card-title">{{ product.name }}</h6>
+                                                <div>
+                                                    <h5 class="card-title pb-0 mb-0 fs-4">{{ product.name }}</h5>
+                                                </div>
                                             </div>
-                                            <div class="card-footer">
+                                            <div class="card-footer" style="height: 105px">
                                                 <div class="d-flex flex-wrap mt-2">
-                                                    <div class="d-flex me-2 mb-1">
+                                                    <div class="d-flex me-2 mb-2">
                                                         <form action="/add_product/" method="post">
                                                             {% csrf_token %}
                                                             <input type="hidden" name="product" id="{{ search_no }}00{{ forloop.counter }}" value="{{ product }}" />
@@ -100,10 +102,10 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="bot-field">
-                                                    <span class="price-field">
-                                                        Cena: {{ product.price|floatformat:2 }}zł
-                                                    </span>
+                                                <div class="row">
+                                                    <div class="d-flex my-1 justify-content-end">
+                                                        <h5 class="pb-0 mb-0 fs-5">Cena: {{ product.price|floatformat:2 }} zł</h5>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
