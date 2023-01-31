@@ -148,8 +148,6 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
-    if not search_word:
-        return redirect("/")
     if not request.session.session_key:
         request.session.save()
     # Google says a session lasts two weeks by default
