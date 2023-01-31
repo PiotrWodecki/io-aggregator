@@ -148,6 +148,9 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
+    if not search_word:
+        messages.error(request, "Produkt nie został sprecyzowany.")
+        return redirect("/", messages)
     if not request.session.session_key:
         request.session.save()
     # Google says a session lasts two weeks by default
@@ -174,7 +177,7 @@ def add_product(request):
     # limit 10 products in cart
     if len(Product.objects.filter(cart=cart)) >= 10:
         messages.error(request, "Koszyk jest pełny.")
-        return redirect(request.META["HTTP_REFERER"], messages)
+        return redirect("/shopping_cart", messages)
     # To save data
     if len(Product.objects.filter(cart=cart, url=cart_json["link"])) == 0:
         product = Product(
