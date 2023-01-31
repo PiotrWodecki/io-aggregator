@@ -67,9 +67,9 @@ def multi_product(request):
     if request.method == "POST":
         form = MultiSearchFrom(request.POST, request.FILES)
         if form.is_valid():
-            file = request.FILES["file"]
+            list_of_products = request.FILES["file"]
             rendered = []
-            csvfile = file.read().decode("utf-8")
+            csvfile = list_of_products.read().decode("utf-8")
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
 
             counter = 0
@@ -156,11 +156,11 @@ def add_product(request):
         request.session.save()
     # Google says a session lasts two weeks by default
     session_id = request.session.session_key
-    cartstring = search_word["product"]
-    cartjson = ast.literal_eval(cartstring)
-    cartjson["quantity"] = int(search_word["getNumber"])
+    cart_string = search_word["product"]
+    cart_json = ast.literal_eval(cart_string)
+    cart_json["quantity"] = int(search_word["getNumber"])
 
-    if not 0 < cartjson["quantity"] <= 10:
+    if not 0 < cart_json["quantity"] <= 10:
         messages.error(request, "Błędna ilość produktu.")
         return redirect(request.META["HTTP_REFERER"], messages)
     # Check if user is logged in
@@ -180,19 +180,19 @@ def add_product(request):
         messages.error(request, "Koszyk jest pełny.")
         return redirect(request.META["HTTP_REFERER"], messages)
     # To save data
-    if len(Product.objects.filter(cart=cart, url=cartjson["link"])) == 0:
+    if len(Product.objects.filter(cart=cart, url=cart_json["link"])) == 0:
         product = Product(
             cart=cart,
-            url=cartjson["link"],
-            image_url=cartjson["image"],
-            name=cartjson["name"],
-            price=cartjson["price"],
-            quantity=cartjson["quantity"],
-            shop_url=cartjson["shop_url"],
+            url=cart_json["link"],
+            image_url=cart_json["image"],
+            name=cart_json["name"],
+            price=cart_json["price"],
+            quantity=cart_json["quantity"],
+            shop_url=cart_json["shop_url"],
         )
     else:
-        product = Product.objects.filter(cart=cart, url=cartjson["link"])[0]
-        product.quantity = cartjson["quantity"]
+        product = Product.objects.filter(cart=cart, url=cart_json["link"])[0]
+        product.quantity = cart_json["quantity"]
     cart.save()
     product.save()
     # if add_product was called in search
@@ -203,16 +203,16 @@ def add_product(request):
         return redirect(request.META["HTTP_REFERER"])
     if context == "":
         return redirect(request.META["HTTP_REFERER"])
-    # if add_product was called in multisearch
+    # if add_product was called in multi_search
     elif len(context) > 0:
-        # read products from multisearch page from which it was called
+        # read products from multi_search page from which it was called
         # change to dict from string
         rendered = ast.literal_eval(context)
         product_to_remove = None
         counter = 0
         for record in rendered:
             for element in record["products"]:
-                if element["name"] == cartjson["name"]:
+                if element["name"] == cart_json["name"]:
                     product_to_remove = counter
                     break
             if product_to_remove is not None:
@@ -252,7 +252,6 @@ def shopping_cart(request):
 
 @csrf_protect
 def cart_delete(request):
-    cart = Cart()
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user_id=request.user.id)
     else:
