@@ -31,7 +31,7 @@ class SearchForm(forms.Form):
         ("Uroda", "Uroda"),
     )
     # product query
-    q = forms.CharField(max_length=32, label="Szukaj")
+    q = forms.CharField(max_length=32, label="")
     shop = forms.ChoiceField(
         choices=SHOP_CHOICE,
         widget=forms.RadioSelect(),
@@ -52,6 +52,4 @@ class MultiSearchFrom(forms.Form):
     helper.form_method = "POST"
     helper.add_input(Submit("submit", "Wyszukaj"))
 
-    file = forms.FileField(
-        validators=[validate_multi_search_file], label="Wybierz plik"
-    )
+    file = forms.FileField(validators=[validate_multi_search_file], label="")
