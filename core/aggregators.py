@@ -54,9 +54,7 @@ def aggregate_products_minimize_shops(
         .annotate(
             count=Count(
                 "productoffer__product_buy_url",
-                filter=operator.invert(
-                    Q(productoffer__product_id__in=ids)
-                ),
+                filter=operator.invert(Q(productoffer__product_id__in=ids)),
             )
         )
         .distinct()
