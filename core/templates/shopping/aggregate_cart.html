@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Optymalizacja zakupów{% endblock %}
+{% block price %}Łączna kwota: {{ total_price }} zł{% endblock %}
+{% block delivery %}Z dostawą: {{ total_prices_with_delivery }} zł{% endblock %}
 {% block content %}
-    <h3>Łączna kwota: {{ total_price }} zł</h3>
-    <h3>Łączna kwota wraz z dostawami: {{ total_prices_with_delivery }} zł</h3>
     {% for seller, offers_deliveries_prices in grouped_offers_deliveries_prices.items %}
         <h3 class="my-3 fs-3">{{ seller }}</h3>
         <div class="list-group mb-3">
