@@ -313,26 +313,3 @@ def get_offers(website_link):
     if len(offers) != 1:
         time.sleep(6)
     return offer_list
-
-
-if __name__ == "__main__":
-    start_time = time.time()
-    categories = ["", "Zdrowie", "Uroda"]
-    entered_string = "ibuprofen"
-    ready_link = prepare_link(entered_string, "Zdrowie")
-    print(ready_link)
-    propos = get_products(ready_link, 1)
-    for prop in propos:
-        print(prop)
-
-    print("Enter id:")
-    idd = 0
-    proposition_link = propos[int(idd)].get("link")
-    list_of_products = get_offers("https://www.ceneo.pl/53545456")
-    for element in list_of_products:
-        print(element)
-
-    print("Program execution:")
-    print("--- %s seconds ---" % (time.time() - start_time))
-    print()
-    print("Program results:")

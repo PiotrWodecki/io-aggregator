@@ -32,8 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "core",
-    "ceneoscraper",
-    "allegroapi",
     "user",
     "django.contrib.admin",
     "django.contrib.auth",
