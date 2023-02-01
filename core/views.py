@@ -93,16 +93,27 @@ def multi_product(request):
                 category = line[2].strip()
                 quantity = int(line[3])
                 search_url = scraper.prepare_link(product_query, category)
-                products = scraper.get_products(search_url, shop_selection)
-                rendered.append(
-                    {
-                        "id": count,
-                        "product_query": product_query,
-                        "shop_selection": shop_selection,
-                        "products": products,
-                        "quantity": quantity,
-                    },
-                )
+                try:
+                    products = scraper.get_products(search_url, shop_selection)
+                    rendered.append(
+                        {
+                            "id": count,
+                            "product_query": product_query,
+                            "shop_selection": shop_selection,
+                            "products": products,
+                            "quantity": quantity,
+                        },
+                    )
+                except (Exception,):
+                    messages.error(
+                        request, "Wystąpił błąd podczas wyszukiwania produktu"
+                    )
+                    form = MultiSearchFrom()
+                    return render(
+                        request,
+                        "shopping/multi_search.html",
+                        {"rendered": rendered, "form": form},
+                    )
                 count += 1
             # it is used to load products list after add any product to cart
             request.session["multi-search-rendered"] = str(rendered)
