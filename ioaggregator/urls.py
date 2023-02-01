@@ -20,15 +20,16 @@ import core.views
 import user.views
 
 urlpatterns = [
+    path("", core.views.search, name="search"),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/signup", user.views.SignUpView.as_view(), name="signup"),
     path("email/<str:token>/", user.views.confirm_email, name="email_confirm"),
-    path("", core.views.search, name="search"),
     path("search/", core.views.select_product, name="select_product"),
     path("multi-search/", core.views.multi_product, name="multi_product"),
     path("history/", core.views.shopping_history, name="shopping_history"),
     path("aggregate/", core.views.aggregate_cart, name="aggregate_cart"),
-    path("search/add_product/", core.views.add_product, name="add_product"),
-    path("shopping-cart/", core.views.shopping_cart, name="shopping_cart"),
+    path("add_product/", core.views.add_product, name="add_product"),
+    path("shopping_cart/", core.views.shopping_cart, name="shopping_cart"),
+    path("delete/", core.views.cart_delete, name="cart_delete"),
 ]

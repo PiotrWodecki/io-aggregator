@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 {% extends 'shopping/search.html' %}
 {% block results %}
-<div class="col container mt-5" style="display: inline-block; vertical-align: top">
+<div class="col container mt-3" style="display: inline-block; vertical-align: top">
     <div class="row">
         {% for product in products %}
-            <div class="col-md-4 mb-4">
+            <div class="col-xl-4 mb-4">
                 <div class="card h-100">
                     <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
                     <div class="card-body">
-                        <h6 class="card-title">{{ product.name }}</h6>
+                        <div>
+                            <h5 class="card-title pb-0 mb-0 fs-4">{{ product.name }}</h5>
+                        </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer" style="height: 105px">
                         <div class="d-flex flex-wrap mt-2">
-                            <div class="d-flex me-2 mb-1">
-                                <form action="add_product/" method="post">
+                            <div class="d-flex me-2 mb-2">
+                                <form action="/add_product/" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="product" id="{{ forloop.counter }}" value="{{ product }}" />
                                     <input type="hidden" name="getNumber" value="0" id="amount{{ forloop.counter }}"/>
                                     <input type="submit" value="Dodaj"
-                                       class="btn btn-primary btn-block"
+                                       class="btn btn-primary add-btn"
                                        product="{{ product }}"
                                        onclick="getValue({{ forloop.counter }})"/>
                                 </form>
@@ -39,10 +41,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bot-field">
-                            <span class="price-field">
-                                Cena: {{ product.price|floatformat:2 }}zł
-                            </span>
+                        <div class="row">
+                            <div class="d-flex my-1 justify-content-end">
+                                <h5 class="pb-0 mb-0 fs-5">Cena: {{ product.price|floatformat:2 }} zł</h5>
+                            </div>
                         </div>
                     </div>
                 </div>

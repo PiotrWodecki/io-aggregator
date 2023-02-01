@@ -5,7 +5,6 @@ from decimal import Decimal
 from typing import List
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.contrib import messages
@@ -19,9 +18,8 @@ from .aggregators import (
     group_offers_deliveries_prices_by_shop,
 )
 from core.validators import validate_multi_search_files_row
-from .models import Product, ProductOffer, Delivery
+from .models import Product, ProductOffer, Delivery, User, Cart
 from .forms import MultiSearchFrom, SearchForm
-from .models import User, Product, Cart
 
 
 def search(request):
@@ -65,20 +63,20 @@ def multi_product(request):
     if request.method == "POST":
         form = MultiSearchFrom(request.POST, request.FILES)
         if form.is_valid():
-            file = request.FILES["file"]
-            count = 0
+            list_of_products = request.FILES["file"]
             rendered = []
-            csvfile = file.read().decode("utf-8")
+            csvfile = list_of_products.read().decode("utf-8")
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
 
-            if len(list(spam_ereader)) > 10:
-                messages.error(request, "Lista zakupów jest zbyt długa")
-                form = MultiSearchFrom()
-                return render(request, "shopping/search.html", {"form": form})
-
+            counter = 0
             for line in spam_ereader:
                 if len(line) == 0:
                     continue
+                counter += 1
+                if counter > 10:
+                    messages.error(request, "Lista zakupów jest zbyt długa")
+                    form = MultiSearchFrom()
+                    return render(request, "shopping/search.html", {"form": form})
                 validator = validate_multi_search_files_row(line)
                 if not validator[0]:
                     messages.error(request, str(validator[1]))
@@ -86,6 +84,7 @@ def multi_product(request):
                     return render(request, "shopping/multi_search.html", {"form": form})
 
             spam_ereader = csv.reader(StringIO(csvfile), delimiter=",")
+            count = 0
             for line in spam_ereader:
                 if len(line) == 0:
                     continue
@@ -101,21 +100,41 @@ def multi_product(request):
                         "product_query": product_query,
                         "shop_selection": shop_selection,
                         "products": products,
+                        "quantity": quantity,
                     },
                 )
                 count += 1
+            # it is used to load products list after add any product to cart
+            request.session["multi-search-rendered"] = str(rendered)
             return render(
                 request,
                 "shopping/multi_search.html",
                 {"rendered": rendered, "form": form},
             )
-    else:
-        form = MultiSearchFrom()
+    try:
+        context = request.session["multi-search-rendered"]
+        rendered = ast.literal_eval(context)
+        if len(rendered) > 0:
+            form = MultiSearchFrom()
+            return render(
+                request,
+                "shopping/multi_search.html",
+                {"rendered": rendered, "form": form},
+            )
+    except KeyError:
+        pass
+    form = MultiSearchFrom()
     return render(request, "shopping/multi_search.html", {"form": form})
 
 
+@csrf_protect
 def aggregate_cart(request):
-    products = Product.objects.all()
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=request.session.session_key)
+
+    products = Product.objects.filter(cart_id__in=cart)
     fill_product_offers(products)
 
     aggregated_offers: List[ProductOffer]
@@ -146,61 +165,117 @@ def shopping_history(request):
 @csrf_protect
 def add_product(request):
     search_word = request.POST
+    if not search_word:
+        messages.error(request, "Produkt niesprecyzowany.")
+        try:
+            return redirect(request.META["HTTP_REFERER"], messages)
+        except KeyError:
+            return redirect("/", messages)
     if not request.session.session_key:
         request.session.save()
-
     # Google says a session lasts two weeks by default
     session_id = request.session.session_key
+    cart_string = search_word["product"]
+    cart_json = ast.literal_eval(cart_string)
+    cart_json["quantity"] = int(search_word["getNumber"])
 
-    cartstring = search_word["product"]
-
-    cartjson = ast.literal_eval(cartstring)
-
-    cartjson["quantity"] = int(search_word["getNumber"])
-
-    if cartjson["quantity"] > 0:
-
-        # Check if user is logged in
-        if request.user.is_authenticated:
-            user = User(request.user)
-            # Move this to where registration is
-            # So the cart is created at signing-up
-            cart = Cart(user=user)
-
-        # Hard to test, probably need refactoring
-        # Chack if cart with X session exist
-        elif len(Cart.objects.filter(session=session_id)) != 0:
-            print("Here")
-            cart = Cart.objects.filter(session=session_id)[0]
-
-        # Save new cart otherwise
+    if not 0 < cart_json["quantity"] <= 10:
+        messages.error(request, "Błędna ilość produktu.")
+        return redirect(request.META["HTTP_REFERER"], messages)
+    # Check if user is logged in
+    if request.user.is_authenticated:
+        user = User.objects.get(id=request.user.id)
+        if len(Cart.objects.filter(user=user)) != 0:
+            cart = Cart.objects.get(user=user)
         else:
-            cart = Cart(
-                session=session_id,
-            )
-            cart.save()
-
-        # To save data
-        product = Product(
-            cart=Cart.objects.filter(session=session_id)[0],
-            url=cartjson["link"],
-            image_url=cartjson["image"],
-            name=cartjson["name"],
-            price=cartjson["price"],
-            quantity=cartjson["quantity"],
-        )
-
-        # Save selected product to DB
-        product.save()
-
-        # Example of query
-        print(Product.objects.filter(cart=cart).values())
-
-        # Stay on same site
-        return redirect(request.META["HTTP_REFERER"])
+            cart = Cart(user=user)
+    # Check if cart with X session exist
+    elif len(Cart.objects.filter(session=session_id)) != 0:
+        cart = Cart.objects.get(session=session_id)
     else:
-        return HttpResponse(status=500)
+        cart = Cart(session=session_id)
+    # limit 10 products in cart
+    if len(Product.objects.filter(cart=cart)) >= 10:
+        messages.error(request, "Koszyk jest pełny.")
+        return redirect("/shopping_cart", messages)
+    # To save data
+    if len(Product.objects.filter(cart=cart, url=cart_json["link"])) == 0:
+        product = Product(
+            cart=cart,
+            url=cart_json["link"],
+            image_url=cart_json["image"],
+            name=cart_json["name"],
+            price=cart_json["price"],
+            quantity=cart_json["quantity"],
+            shop_url=cart_json["shop_url"],
+        )
+    else:
+        product = Product.objects.filter(cart=cart, url=cart_json["link"])[0]
+        product.quantity = cart_json["quantity"]
+    cart.save()
+    product.save()
+
+    # if add_product was called in search
+    if "/?q=" in request.META["HTTP_REFERER"]:
+        return redirect(request.META["HTTP_REFERER"])
+
+    # if add_product was called in multi_search
+    try:
+        context = str(request.session.get("multi-search-rendered"))
+    except (Exception,):
+        # Stay on the same site
+        return redirect(request.META["HTTP_REFERER"])
+    if len(context) > 0:
+        # read products from multi_search page from which it was called
+        # change to dict from string
+        rendered = ast.literal_eval(context)
+        product_to_remove = None
+        counter = 0
+        for record in rendered:
+            for element in record["products"]:
+                if element["name"] == cart_json["name"]:
+                    product_to_remove = counter
+                    break
+            if product_to_remove is not None:
+                break
+            counter += 1
+        # removing product which was added to cart
+        try:
+            del rendered[product_to_remove]
+        except TypeError:
+            # TypeError can be trigger when user went back in web browser and click add to cart
+            # something what already is in cart (deleting wants trigger at product which is not in list)
+            pass
+        # and save it in session variable
+        request.session["multi-search-rendered"] = str(rendered)
+        return redirect("/multi-search/")
+    else:
+        request.session["multi-search-rendered"] = ""
+        return redirect("/multi-search/")
 
 
+@csrf_protect
 def shopping_cart(request):
-    return render(request, "shopping/shopping_cart.html")
+    session_id = request.session.session_key
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=session_id)
+    products = Product.objects.filter(cart_id__in=cart)
+    total_prices = [product.price * product.quantity for product in products]
+    content = zip(products, total_prices)
+    return render(request, "shopping/shopping_cart.html", {"content": content})
+
+
+@csrf_protect
+def cart_delete(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user_id=request.user.id)
+    else:
+        cart = Cart.objects.filter(session=request.session.session_key)
+    if request.method == "POST":
+        carry = request.POST
+        url = carry["delete"]
+        product = Product.objects.filter(cart_id__in=cart, url=url)
+        product.delete()
+    return redirect("shopping_cart")

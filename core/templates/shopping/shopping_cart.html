@@ -1,4 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}Koszyk{% endblock %}
 {% block content %}
+    {% for product, total_price in content %}
+        <div class="list-group-item mt-3 border">
+            <div class="row">
+                <h5 class="pb-0 mt-1 mb-2 fs-4">{{ product.name }}</h5>
+            </div>
+            <div class="row">
+                <div class="col-4 my-2">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                    class="rounded img-thumbnail"/>
+                </div>
+                <div class="col my-2 d-flex align-self-center flex-column">
+                    <p class="fs-5">Cena: {{ product.price }} zł</p>
+                    <p class="fs-5">Ilość: {{ product.quantity }}</p>
+                    <p class="fs-5">Cena całkowita: {{ total_price }} zł</p>
+                    <form action="{% url 'cart_delete' %}" method="post" class="mb-2">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-secondary fs-5" type="submit"
+                                name="delete" value="{{ product.url }}">Usuń</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{% url 'aggregate_cart' %}" class="btn btn-primary btn-block my-3 fs-1">Optymalizuj</a>
 {% endblock %}

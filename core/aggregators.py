@@ -48,19 +48,19 @@ def aggregate_products_minimize_shops(
     selected_product_offers: List[ProductOffer] = []
     selected_deliveries: List[Delivery] = []
     total_prices: List[Decimal] = []
+    ids = [-1]
     for seller in (
         Seller.objects.filter(productoffer__product__in=products)
         .annotate(
             count=Count(
                 "productoffer__product_buy_url",
-                filter=operator.invert(
-                    Q(productoffer__product_id__in=[selected_product_offers])
-                ),
+                filter=operator.invert(Q(productoffer__product_id__in=ids)),
             )
         )
         .distinct()
         .order_by("-count")
     ):
+        ids = [int(offer.product_id) for offer in selected_product_offers]
         offers = ProductOffer.objects.filter(
             product__in=products, seller=seller
         ).order_by("price")
@@ -93,11 +93,13 @@ def aggregate_products_minimize_shops(
             product.shop_url != ""
             and ProductOffer.objects.filter(product=product).count() == 0
         ):
+            tmp_seller = Seller.objects.create(url=product.shop_url, image="")
             selected_product_offers.append(
                 ProductOffer(
                     product_buy_url=product.url,
-                    price=product.lowest_price,
+                    price=product.price,
                     product=product,
+                    seller=tmp_seller,
                 )
             )
             selected_deliveries.append(
@@ -107,7 +109,7 @@ def aggregate_products_minimize_shops(
                     product_offer=selected_product_offers[-1],
                 )
             )
-            total_prices.append(product.lowest_price * product.quantity)
+            total_prices.append(product.price * product.quantity)
     return selected_product_offers, selected_deliveries, total_prices
 
 

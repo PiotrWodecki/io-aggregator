@@ -2,30 +2,32 @@
 {% block title %}Optymalizacja zakupów{% endblock %}
 {% block content %}
     {% for seller, offers_deliveries_prices in grouped_offers_deliveries_prices.items %}
-        <h2>{{ seller }}</h2>
+        <h3 class="my-3 fs-3">{{ seller }}</h3>
         <div class="list-group mb-3">
             {% for offer, delivery, total_price in offers_deliveries_prices %}
-                <div class="list-group-item">
+                <div class="list-group-item mb-3 border">
                     <div class="row">
-                        <div class="col">
-                            <h5>{{ offer.product.name }}</h5>
+                        <h5 class="pb-0 mt-1 mb-2 fs-4">{{ offer.product.name }}</h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 my-2">
                             <img src="{{ offer.product.image_url }}" alt="{{ offer.product.name }}"
-                                 class="rounded img-thumbnail"/>
+                            class="rounded img-thumbnail"/>
                         </div>
-                        <div class="col">
-                            <p>Cena: {{ offer.price }}</p>
-                            <p class="mt-2">Ilość: {{ offer.product.quantity }}</p>
-                            <p class="mt-2">Cena całkowita: {{ total_price }}</p>
-                            <a href="{{ offer.product_buy_url }}" target="_blank" class="btn btn-primary">Kup teraz!</a>
-
+                        <div class="col my-2 d-flex align-self-center flex-column">
+                            <p class="fs-5">Cena: {{ offer.price }} zł</p>
+                            <p class="fs-5">Ilość: {{ offer.product.quantity }}</p>
+                            <p class="fs-5">Cena całkowita: {{ total_price }} zł</p>
+                            <a href="{{ offer.product_buy_url }}" target="_blank"
+                               class="btn btn-outline-primary fs-5" style="width: 120px">Kup teraz!</a>
                         </div>
                     </div>
                 </div>
                 {% if forloop.last %}
-                    <div class="list-group-item">
-                        <div class="row-md-4">
-                            <p>Dostawa: {{ delivery.name }}</p>
-                            <p>Koszt dostawy: {{ delivery.price }}</p>
+                    <div class="list-group-item border">
+                        <div class="col my-2 d-flex align-self-center flex-column">
+                            <p class="fs-5">Dostawa: {{ delivery.name }}</p>
+                            <p class="fs-5 mb-0">Koszt dostawy: {{ delivery.price }} zł</p>
                         </div>
                     </div>
                 {% endif %}
