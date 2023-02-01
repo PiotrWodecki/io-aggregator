@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Koszyk{% endblock %}
 {% block content %}
-    <h3>Łączna kwota: {{ content.1 }} zł</h3>
-    {% for product, total_price in content.0 %}
+    <h3>Łączna kwota: {{ total_price }} zł</h3>
+    {% for product, total_price in content %}
         <div class="list-group-item mt-3 border">
             <div class="row">
                 <h5 class="pb-0 mt-1 mb-2 fs-4">{{ product.name }}</h5>
