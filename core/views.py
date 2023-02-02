@@ -161,10 +161,18 @@ def aggregate_cart(request):
         aggregated_offers, aggregated_deliveries, total_prices
     )
 
+    total_price_with_delivery = sum(total_prices)
+    for delivery in aggregated_deliveries:
+        total_price_with_delivery += delivery.price
+
     return render(
         request,
         "shopping/aggregate_cart.html",
-        {"grouped_offers_deliveries_prices": grouped_offers_deliveries_prices},
+        {
+            "grouped_offers_deliveries_prices": grouped_offers_deliveries_prices,
+            "total_price": sum(total_prices),
+            "total_prices_with_delivery": total_price_with_delivery,
+        },
     )
 
 
@@ -275,7 +283,11 @@ def shopping_cart(request):
     products = Product.objects.filter(cart_id__in=cart)
     total_prices = [product.price * product.quantity for product in products]
     content = zip(products, total_prices)
-    return render(request, "shopping/shopping_cart.html", {"content": content})
+    return render(
+        request,
+        "shopping/shopping_cart.html",
+        {"content": content, "total_price": sum(total_prices)},
+    )
 
 
 @csrf_protect
